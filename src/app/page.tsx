@@ -13,6 +13,7 @@ import { db } from "@/lib/firebase"; // Adjust the import according to your proj
 import { addDoc, collection, updateDoc, doc, getDocs, query, where, Timestamp } from "firebase/firestore";
 import { v4 as uuidv4 } from 'uuid';
 import { useCookies } from 'react-cookie';
+import Image from 'next/image';
 
 // Define the schema
 const formSchema = z.object({
@@ -201,10 +202,10 @@ export default function Page() {
         <DialogContent>
           <div className="flex justify-center space-x-4">
             <button onClick={() => handleLanguageSelect("en")} className="border-none bg-transparent p-0">
-              <img src="/flags/uk.png" alt="English" className="w-24 h-16" />
+            <Image src="/flags/uk.png" alt="English" width={96} height={64} />
             </button>
             <button onClick={() => handleLanguageSelect("fr")} className="border-none bg-transparent p-0">
-              <img src="/flags/fr.png" alt="Français" className="w-24 h-16" />
+            <Image src="/flags/fr.png" alt="Français" width={96} height={64} />
             </button>
           </div>
         </DialogContent>
