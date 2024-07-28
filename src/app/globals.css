@@ -1,7 +1,33 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
- 
+
+:root {
+  --primary-color: #25A6D5;
+}
+
+input[type="radio"]:checked + label,
+input[type="radio"]:checked + label::before {
+  border-color: var(--primary-color);
+  background-color: var(--primary-color);
+}
+
+.MuiSlider-thumb {
+  color: var(--primary-color);
+}
+
+.MuiSlider-track {
+  color: var(--primary-color);
+}
+
+.MuiSlider-rail {
+  color: var(--primary-color);
+}
+
+textarea::placeholder {
+  color: var(--primary-color);
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -65,7 +91,17 @@
     --ring: 212.7 26.8% 83.9%;
   }
 }
- 
+@font-face {
+  font-family: 'PP Telegraf';
+  src: url('/PPTelegraf-UltraBold.otf') format('opentype');
+  font-weight: bold;
+  font-style: normal;
+}
+
+.font-pp-telegraf {
+  font-family: 'PP Telegraf', sans-serif;
+}
+
 @layer base {
   * {
     @apply border-border;

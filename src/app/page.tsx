@@ -8,22 +8,23 @@ import { Form, FormField, FormItem, FormLabel, FormMessage, FormControl } from "
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Slider, Radio, RadioGroup, FormControlLabel, FormControl as MuiFormControl, FormLabel as MuiFormLabel, Dialog, DialogActions, DialogContent, DialogTitle, CircularProgress } from "@mui/material";
-import { db } from "@/lib/firebase"; // Adjust the import according to your project structure
+import { Slider, Radio, RadioGroup, FormControlLabel, FormControl as MuiFormControl, FormLabel as MuiFormLabel, Dialog, DialogActions, DialogContent, DialogTitle, CircularProgress, Snackbar, Alert } from "@mui/material";
+import { db } from "@/lib/firebase";
 import { addDoc, collection, updateDoc, doc, getDocs, query, where, Timestamp } from "firebase/firestore";
 import { v4 as uuidv4 } from 'uuid';
 import { useCookies } from 'react-cookie';
 import Image from 'next/image';
+import "./globals.css";  // Ensure this is imported to use the custom font
 
-// Define the schema
 const formSchema = z.object({
   mobileGames: z.enum(["Yes", "No"]),
   blockchainKnowledge: z.enum(["Yes", "a little", "No"]),
-  interestMobileGameTokens: z.number().min(1).max(10),
-  interestDigitalPurchases: z.number().min(1).max(10),
-  interestClashOfClans: z.number().min(1).max(10),
+  interestMobileGameTokens: z.number().min(0).max(10),
+  interestDigitalPurchases: z.number().min(0).max(10),
+  interestClashOfClans: z.number().min(0).max(10),
   comments: z.string().optional(),
 });
+
 
 const languages = ['en', 'fr'] as const;
 type Language = (typeof languages)[number];
@@ -43,10 +44,12 @@ const translations: Record<Language, { [key: string]: string }> = {
     emailPlaceholder: "Enter your email",
     participate: "Participate",
     thankYou: "Thank you for your time!",
-    enterEmail: "Enter Email to Participate",
+    enterEmail: "Enter your Email to Participate",
     yes: "Yes",
     no: "No",
     aLittle: "A little",
+    participateInDraw: "PARTICIPATE in the draw",
+    estimatedTime: "Estimated time: Less than a minute",
   },
   fr: {
     mobileGames: "Jouez-vous à des jeux vidéo mobiles?",
@@ -66,6 +69,8 @@ const translations: Record<Language, { [key: string]: string }> = {
     yes: "Oui",
     no: "Non",
     aLittle: "Un petit peu",
+    participateInDraw: "PARTICIPER au tirage au sort",
+    estimatedTime: "Temps estimé : Moins d'une minute",
   },
 };
 
@@ -81,9 +86,9 @@ export default function Page() {
     defaultValues: {
       mobileGames: "No",
       blockchainKnowledge: "No",
-      interestMobileGameTokens: 1,
-      interestDigitalPurchases: 1,
-      interestClashOfClans: 1,
+      interestMobileGameTokens: 5,
+      interestDigitalPurchases: 5,
+      interestClashOfClans: 5,
       comments: "",
     },
   });
@@ -95,6 +100,16 @@ export default function Page() {
   const [email, setEmail] = React.useState("");
   const [docId, setDocId] = React.useState("");
   const [cookies, setCookie] = useCookies(['user']);
+  const [showFinalMessage, setShowFinalMessage] = React.useState(false);
+  const [showParticipateButton, setShowParticipateButton] = React.useState(false);
+  const [snackbarOpen, setSnackbarOpen] = React.useState(false);
+  const [snackbarMessage, setSnackbarMessage] = React.useState('');
+  const [snackbarSeverity, setSnackbarSeverity] = React.useState<'success' | 'error'>('success');
+  const showError = (message: string) => {
+    setSnackbarMessage(message);
+    setSnackbarSeverity('error');
+    setSnackbarOpen(true);
+  };
 
   React.useEffect(() => {
     const languageSelected = localStorage.getItem("languageSelected");
@@ -107,10 +122,7 @@ export default function Page() {
     if (!cookies.user) {
       setCookie('user', uuidv4(), { path: '/' });
     }
-    
-    
   }, [cookies, setCookie]);
-  const userId = cookies.user;
 
   const handleLanguageSelect = (language: Language) => {
     localStorage.setItem("languageSelected", language);
@@ -128,246 +140,358 @@ export default function Page() {
   const handleSubmit = async (data: z.infer<typeof formSchema>) => {
     setLoading(true);
     const { userAgent, ip } = await getUserInfo();
-  
-    const q = query(collection(db, "sondage"), where("userId", "==", cookies.user));
-    const querySnapshot = await getDocs(q);
-    if (!querySnapshot.empty) {
-      alert(language === "en" ? "You have already submitted this form." : "Vous avez déjà soumis ce formulaire.");
+
+    // Check for duplicate submissions on client-side
+    const qClient = query(collection(db, "sondage"), where("userId", "==", cookies.user));
+    const querySnapshotClient = await getDocs(qClient);
+    if (!querySnapshotClient.empty) {
+      showError(language === "en" ? "You have already submitted this form." : "Vous avez déjà soumis ce formulaire.");
       setLoading(false);
       return;
     }
-  
+
+    // Check for duplicate submissions on server-side
+    const qServer = query(collection(db, "sondage"), where("userAgent", "==", userAgent), where("ip", "==", ip));
+    const querySnapshotServer = await getDocs(qServer);
+    if (!querySnapshotServer.empty) {
+      showError(language === "en" ? "You have already submitted this form." : "Vous avez déjà soumis ce formulaire.");
+      setLoading(false);
+      return;
+    }
+
     const mobileGaming = data.mobileGames === "Yes";
-    
-    const blockchainKnowledge = language === "fr" && data.blockchainKnowledge in mapFrenchToEnglish
-      ? mapFrenchToEnglish[data.blockchainKnowledge]
+    const blockchainFamiliarity = language === "fr"
+      ? mapFrenchToEnglish[data.blockchainKnowledge] ?? "Unknown"
       : data.blockchainKnowledge;
-  
-  
-    // Ensure blockchainKnowledge is not undefined
-    if (!blockchainKnowledge) {
-      console.error("blockchainKnowledge is undefined");
+
+    if (!blockchainFamiliarity) {
+      showError(language === "en" ? "Invalid response for blockchain familiarity." : "Réponse invalide pour la familiarité avec la blockchain.");
       setLoading(false);
       return;
     }
-  
-    const docRef = await addDoc(collection(db, "sondage"), {
-      userId: cookies.user,
-      responseDate: Timestamp.now(),
-      mobileGaming,
-      blockchainKnowledge,
-      interestInEarningTokens: data.interestMobileGameTokens,
-      interestInDigitalAssets: data.interestDigitalPurchases,
-      interestInClashOfClans: data.interestClashOfClans,
-      comments: data.comments,
-      country: language === "en" ? "UK" : "France",
-      userAgent,
-      ip,
-    });
-  
-    setDocId(docRef.id);
-    setLoading(false);
-    setEmailDialogOpen(true);
+
+    try {
+      const docRef = await addDoc(collection(db, "sondage"), {
+        userId: cookies.user,
+        responseDate: Timestamp.now(),
+        mobileGaming,
+        blockchainFamiliarity,
+        interestInEarningTokens: data.interestMobileGameTokens,
+        interestInDigitalAssets: data.interestDigitalPurchases,
+        interestInClashOfClans: data.interestClashOfClans,
+        comments: data.comments,
+        country: language === "en" ? "UK" : "France",
+        userAgent,
+        ip,
+      });
+
+      setDocId(docRef.id);
+      setLoading(false);
+      setEmailDialogOpen(true);
+    } catch (error) {
+      showError(language === "en" ? "An error occurred while submitting the form." : "Une erreur s'est produite lors de la soumission du formulaire.");
+      setLoading(false);
+    }
   };
-  
-  
-  
+
+  const emailSchema = z.object({
+    email: z.string().email({ message: language === "en" ? "Invalid email address" : "Adresse e-mail invalide" }),
+  });
 
   const handleEmailSubmit = async () => {
     setLoading(true);
-
-    // Check if the email already exists
-    const emailQuery = query(collection(db, "sondage"), where("email", "==", email));
-    const emailSnapshot = await getDocs(emailQuery);
-    if (!emailSnapshot.empty) {
-      alert(language === "en" ? "Oops, it seems you are already registered!" : "Oops, il semble que vous êtes déjà enregistré !");
+    let emailIsValid = true;
+  
+    try {
+      // Validate email
+      emailSchema.parse({ email });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        emailIsValid = false;
+        showError(error.errors[0].message);
+      }
+    }
+  
+    if (!emailIsValid) {
       setLoading(false);
       return;
     }
-
-    await updateDoc(doc(collection(db, "sondage"), docId), {
-      email: email,
-    });
-
+  
+    try {
+      // Check if the email already exists
+      const emailQuery = query(collection(db, "sondage"), where("email", "==", email));
+      const emailSnapshot = await getDocs(emailQuery);
+      if (!emailSnapshot.empty) {
+        showError(language === "en" ? "Oops, it seems you are already registered!" : "Oops, il semble que vous êtes déjà enregistré !");
+        setLoading(false);
+        return;
+      }
+  
+      await updateDoc(doc(collection(db, "sondage"), docId), {
+        email: email,
+      });
+  
+      // Send email
+      const apiEndpoint = language === 'fr' ? '/api/sendFR' : '/api/sendEN';
+      const response = await fetch(apiEndpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      });
+  
+      const result = await response.json();
+      if (response.ok) {
+        setShowFinalMessage(true);
+        setShowParticipateButton(false);
+      } else {
+        showError(result.error || 'Something went wrong.');
+      }
+    } catch (error) {
+      showError('Something went wrong.');
+    }
+  
     setLoading(false);
     setEmailDialogOpen(false);
+  };
+  
+
+
+  const handleCloseEmailDialog = () => {
+    setEmailDialogOpen(false);
+    setShowFinalMessage(true);
+    setShowParticipateButton(true);
   };
 
   const t = translations[language];
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <Dialog open={open} onClose={() => setOpen(false)} maxWidth="xs" fullWidth>
-        <DialogTitle className="text-center">{t.selectLanguage}</DialogTitle>
-        <DialogContent>
-          <div className="flex justify-center space-x-4">
-            <button onClick={() => handleLanguageSelect("en")} className="border-none bg-transparent p-0">
-            <Image src="/flags/uk.png" alt="English" width={96} height={64} />
-            </button>
-            <button onClick={() => handleLanguageSelect("fr")} className="border-none bg-transparent p-0">
-            <Image src="/flags/fr.png" alt="Français" width={96} height={64} />
-            </button>
+    <main className="flex min-h-screen flex-col items-center justify-between p-4 sm:p-6 lg:p-8">
+      {!showFinalMessage ? (
+        <>
+          <div className="w-full max-w-3xl mx-auto">
+            <div className="flex justify-between items-center">
+              <Image src="/OXELTALogo2_PNG.png" alt="Logo" width={75} height={75} />
+              <button
+                onClick={() => setOpen(true)}
+                className="text-sm text-gray-500 hover:text-gray-700 focus:outline-none"
+              >
+                {language === "en" ? (
+                  <Image src="/flags/uk.png" alt="English" width={32} height={21.3} />
+                ) : (
+                  <Image src="/flags/fr.png" alt="Français" width={32} height={21.3} />
+                )}
+              </button>
+            </div>
+            <div className="mt-4 text-left">
+              <p className="text-gray-500 text-sm">{t.estimatedTime}</p>
+            </div>
           </div>
-        </DialogContent>
-        <DialogActions className="flex justify-center">
-          <Button onClick={() => setOpen(false)}>{t.cancel}</Button>
-        </DialogActions>
-      </Dialog>
 
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleSubmit)} className="max-w-lg w-full flex flex-col gap-4">
-          <FormField
-            control={form.control}
-            name="mobileGames"
-            render={({ field }) => (
-              <FormItem>
-                <MuiFormControl component="fieldset">
-                  <MuiFormLabel component="legend">{t.mobileGames}</MuiFormLabel>
-                  <RadioGroup
-                    value={field.value}
-                    onChange={field.onChange}
-                    name="mobileGames"
-                    className="flex flex-col"
-                  >
-                    <FormControlLabel value="Yes" control={<Radio />} label={t.yes} />
-                    <FormControlLabel value="No" control={<Radio />} label={t.no} />
-                  </RadioGroup>
-                </MuiFormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          <Dialog open={open} onClose={() => setOpen(false)} maxWidth="xs" fullWidth>
+            <DialogTitle className="text-center">{t.selectLanguage}</DialogTitle>
+            <DialogContent>
+              <div className="flex justify-center space-x-4">
+                <button onClick={() => handleLanguageSelect("en")} className="border-none bg-transparent p-0">
+                  <Image src="/flags/uk.png" alt="English" width={96} height={64} />
+                </button>
+                <button onClick={() => handleLanguageSelect("fr")} className="border-none bg-transparent p-0">
+                  <Image src="/flags/fr.png" alt="Français" width={96} height={64} />
+                </button>
+              </div>
+            </DialogContent>
+            <DialogActions className="flex justify-center">
+              <Button onClick={() => setOpen(false)}>{t.cancel}</Button>
+            </DialogActions>
+          </Dialog>
 
-          <FormField
-            control={form.control}
-            name="blockchainKnowledge"
-            render={({ field }) => (
-              <FormItem>
-                <MuiFormControl component="fieldset">
-                  <MuiFormLabel component="legend">{t.blockchainKnowledge}</MuiFormLabel>
-                  <RadioGroup
-                    value={field.value}
-                    onChange={field.onChange}
-                    name="blockchainKnowledge"
-                    className="flex flex-col"
-                  >
-                    <FormControlLabel value="Yes" control={<Radio />} label={t.yes} />
-                    <FormControlLabel value="a little" control={<Radio />} label={t.aLittle} />
-                    <FormControlLabel value="No" control={<Radio />} label={t.no} />
-                  </RadioGroup>
-                </MuiFormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(handleSubmit)} className="w-full max-w-2xl mx-auto flex flex-col gap-4">
+              <FormField
+                control={form.control}
+                name="mobileGames"
+                render={({ field }) => (
+                  <FormItem>
+                    <MuiFormControl component="fieldset">
+                      <MuiFormLabel component="legend">{t.mobileGames}</MuiFormLabel>
+                      <RadioGroup
+                        value={field.value}
+                        onChange={field.onChange}
+                        name="mobileGames"
+                        className="flex flex-col"
+                      >
+                        <FormControlLabel value="Yes" control={<Radio style={{ color: '#25A6D5' }} />} label={t.yes} />
+                        <FormControlLabel value="No" control={<Radio style={{ color: '#25A6D5' }} />} label={t.no} />
+                      </RadioGroup>
+                    </MuiFormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-          <Controller
-            control={form.control}
-            name="interestMobileGameTokens"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t.interestMobileGameTokens}</FormLabel>
-                <FormControl>
-                  <Slider
-                    value={field.value}
-                    onChange={(_, value) => field.onChange(value as number)}
-                    min={1}
-                    max={10}
-                    step={1}
-                    marks
-                    className="w-full"
-                    valueLabelDisplay="auto"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+              <FormField
+                control={form.control}
+                name="blockchainKnowledge"
+                render={({ field }) => (
+                  <FormItem>
+                    <MuiFormControl component="fieldset">
+                      <MuiFormLabel component="legend">{t.blockchainKnowledge}</MuiFormLabel>
+                      <RadioGroup
+                        value={field.value}
+                        onChange={field.onChange}
+                        name="blockchainKnowledge"
+                        className="flex flex-col"
+                      >
+                        <FormControlLabel value="Yes" control={<Radio style={{ color: '#25A6D5' }} />} label={t.yes} />
+                        <FormControlLabel value="a little" control={<Radio style={{ color: '#25A6D5' }} />} label={t.aLittle} />
+                        <FormControlLabel value="No" control={<Radio style={{ color: '#25A6D5' }} />} label={t.no} />
+                      </RadioGroup>
+                    </MuiFormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-          <Controller
-            control={form.control}
-            name="interestDigitalPurchases"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t.interestDigitalPurchases}</FormLabel>
-                <FormControl>
-                  <Slider
-                    value={field.value}
-                    onChange={(_, value) => field.onChange(value as number)}
-                    min={1}
-                    max={10}
-                    step={1}
-                    marks
-                    className="w-full"
-                    valueLabelDisplay="auto"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+              <Controller
+                control={form.control}
+                name="interestMobileGameTokens"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t.interestMobileGameTokens}</FormLabel>
+                    <FormControl>
+                      <Slider
+                        value={field.value}
+                        onChange={(_, value) => field.onChange(value as number)}
+                        min={0}
+                        max={10}
+                        step={1}
+                        marks
+                        className="w-full"
+                        valueLabelDisplay="auto"
+                        style={{ color: '#25A6D5' }}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-          <Controller
-            control={form.control}
-            name="interestClashOfClans"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t.interestClashOfClans}</FormLabel>
-                <FormControl>
-                  <Slider
-                    value={field.value}
-                    onChange={(_, value) => field.onChange(value as number)}
-                    min={1}
-                    max={10}
-                    step={1}
-                    marks
-                    className="w-full"
-                    valueLabelDisplay="auto"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+              <Controller
+                control={form.control}
+                name="interestDigitalPurchases"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t.interestDigitalPurchases}</FormLabel>
+                    <FormControl>
+                      <Slider
+                        value={field.value}
+                        onChange={(_, value) => field.onChange(value as number)}
+                        min={0}
+                        max={10}
+                        step={1}
+                        marks
+                        className="w-full"
+                        valueLabelDisplay="auto"
+                        style={{ color: '#25A6D5' }}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-          <FormField
-            control={form.control}
-            name="comments"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t.comments}</FormLabel>
-                <FormControl>
-                  <Textarea placeholder={t.comments} {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+              <Controller
+                control={form.control}
+                name="interestClashOfClans"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t.interestClashOfClans}</FormLabel>
+                    <FormControl>
+                      <Slider
+                        value={field.value}
+                        onChange={(_, value) => field.onChange(value as number)}
+                        min={0}
+                        max={10}
+                        step={1}
+                        marks
+                        className="w-full"
+                        valueLabelDisplay="auto"
+                        style={{ color: '#25A6D5' }}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-          <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? <CircularProgress size={24} /> : t.submit}
-          </Button>
-        </form>
-      </Form>
+              <FormField
+                control={form.control}
+                name="comments"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t.comments}</FormLabel>
+                    <FormControl>
+                      <Textarea placeholder={t.comments} {...field} className="border border-gray-300 focus:border-primary focus:ring focus:ring-primary" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-      <Dialog open={emailDialogOpen} onClose={() => setEmailDialogOpen(false)} maxWidth="xs" fullWidth>
-        <DialogTitle className="text-center">{t.thankYouMessage}</DialogTitle>
-        <DialogContent>
-          <div className="flex flex-col items-center space-y-4">
-            <Input 
-              placeholder={t.emailPlaceholder} 
-              value={email} 
-              onChange={(e) => setEmail(e.target.value)} 
-              className="w-full" 
-            />
-          </div>
-        </DialogContent>
-        <DialogActions className="flex justify-center">
-          <Button onClick={handleEmailSubmit} disabled={loading}>
-            {loading ? <CircularProgress size={24} /> : t.participate}
-          </Button>
-        </DialogActions>
-      </Dialog>
+              <Button type="submit" className="w-full bg-primary text-white" disabled={loading}>
+                {loading ? <CircularProgress size={24} /> : t.submit}
+              </Button>
+            </form>
+          </Form>
+          <Dialog open={emailDialogOpen} onClose={handleCloseEmailDialog} maxWidth="xs" fullWidth>
+            <DialogTitle className="text-center">{t.thankYouTitle}</DialogTitle>
+            <DialogContent className="text-center">
+              <p className="mb-4">{t.thankYouMessage}</p>
+              <div className="flex flex-col items-center space-y-4">
+                <Input
+                  placeholder={t.emailPlaceholder}
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full"
+                />
+                {/* Validation message logic only on submit */}
+                {emailDialogOpen && email && (() => {
+                  const result = emailSchema.safeParse({ email });
+                  return !result.success && result.error ? (
+                    <p className="text-red-500">{result.error.errors[0].message}</p>
+                  ) : null;
+                })()}
+              </div>
+            </DialogContent>
+            <DialogActions className="flex justify-center">
+              <Button onClick={handleEmailSubmit} disabled={loading}>
+                {loading ? <CircularProgress size={24} /> : t.participate}
+              </Button>
+            </DialogActions>
+          </Dialog>
+
+
+        </>
+      ) : (
+        <div className="flex flex-col items-center justify-center min-h-screen">
+          <Image src="/4.HomePage.png" alt="Logo" width={300} height={300} />
+          <h1 className="text-center mt-4 font-pp-telegraf">{t.thankYou}</h1>
+          {showParticipateButton && (
+            <div className="flex flex-col items-center mt-4">
+              <h2 className="text-center">{t.participateInDraw}</h2>
+              <Button onClick={() => setEmailDialogOpen(true)} className="mt-2">
+                {t.participate}
+              </Button>
+            </div>
+          )}
+        </div>
+      )}
+      <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={() => setSnackbarOpen(false)}>
+        <Alert onClose={() => setSnackbarOpen(false)} severity={snackbarSeverity} sx={{ width: '100%' }}>
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </main>
   );
 }
