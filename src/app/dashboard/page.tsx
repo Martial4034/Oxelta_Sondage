@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { getSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 import { db } from '@/lib/firebase';
