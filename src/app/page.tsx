@@ -14,7 +14,7 @@ import { addDoc, collection, updateDoc, doc, getDocs, query, where, Timestamp } 
 import { v4 as uuidv4 } from 'uuid';
 import { useCookies } from 'react-cookie';
 import Image from 'next/image';
-import "./globals.css";  // Ensure this is imported to use the custom font
+import "./globals.css";
 
 const formSchema = z.object({
   mobileGames: z.enum(["Yes", "No"]),
@@ -31,16 +31,17 @@ type Language = (typeof languages)[number];
 
 const translations: Record<Language, { [key: string]: string }> = {
   en: {
-    mobileGames: "Do you play mobile video games?",
-    blockchainKnowledge: "Are you familiar with blockchain technology?",
-    interestMobileGameTokens: "On a scale of 1 to 10, how interested are you in playing a mobile game where you can earn money in the form of redeemable tokens?",
-    interestDigitalPurchases: "On a scale of 1 to 10, how interested are you in earning, buying, or selling your digital purchases in games?",
-    interestClashOfClans: "On a scale of 1 to 10, what is your interest in implementing these two elements in the Clash of Clans game?",
-    comments: "Do you have any comments or suggestions to share?",
+    mobileGames: "Do you play mobile video games ?",
+    blockchainKnowledge: "Are you familiar with blockchain technology ?",
+    interestMobileGameTokens: "On a scale of 1 to 10, how interested are you in playing a mobile game where you can choose to use the tokens you earn in-game or convert them into real money ?",
+    interestDigitalPurchases: "On a scale of 1 to 10, how interested are you in truly owning the digital items in your games, with the ability to sell, buy, and trade them with other players ?",
+    interestClashOfClans: "On a scale of 1 to 10, how interested are you in a game inspired by Clash of Clans where you can own and trade digital items, and convert tokens into real money ?",
+    comments: "Do you have any comments or suggestions to share ?",
+    commentsPlaceHolder: "Share your comments or questions, we are listening !",
     submit: "Submit",
     selectLanguage: "Select Language",
     cancel: "Cancel",
-    thankYouMessage: "Thank you! Your response has been recorded. To participate in the draw, please enter your email below:",
+    thankYouMessage: "Thank you for your time. Enter your email here to participate in the prize draw. Plus, receive information and the project deck. The Oxelta Team",
     emailPlaceholder: "Enter your email",
     participate: "Participate",
     thankYou: "Thank you for your time!",
@@ -52,16 +53,17 @@ const translations: Record<Language, { [key: string]: string }> = {
     estimatedTime: "Estimated time: Less than a minute",
   },
   fr: {
-    mobileGames: "Jouez-vous à des jeux vidéo mobiles?",
-    blockchainKnowledge: "Connaissez-vous la technologie blockchain?",
-    interestMobileGameTokens: "Sur une échelle de 1 à 10, quel est votre intérêt pour jouer à un jeu mobile où vous pouvez gagner de l'argent sous forme de jetons échangeables?",
-    interestDigitalPurchases: "Sur une échelle de 1 à 10, quel est votre intérêt pour gagner, acheter ou vendre vos achats numériques dans les jeux?",
-    interestClashOfClans: "Sur une échelle de 1 à 10, quel est votre intérêt à mettre en œuvre ces deux éléments dans le jeu Clash of Clans?",
-    comments: "Avez-vous des commentaires ou des suggestions à partager?",
+    mobileGames: "Jouez-vous à des jeux vidéo mobiles ?",
+    blockchainKnowledge: "Connaissez-vous la technologie blockchain ?",
+    interestMobileGameTokens: "De 1 à 10, quel est ton intérêt pour jouer à un jeu mobile où tu peux choisir si tes tokens gagnés dans le jeu peuvent être utilisés dans le jeu ou convertis en argent réel ?",
+    interestDigitalPurchases: "De 1 à 10, quel est ton intérêt à posséder réellement les items numériques de tes jeux, t'offrant la possibilité de les vendre, acheter et échanger avec d'autres joueurs ?",
+    interestClashOfClans: "De 1 à 10, quel est ton intérêt pour un jeu inspiré de Clash of Clans où tu peux posséder et échanger des items numériques, et convertir des tokens en argent réel ?",
+    comments: "Avez-vous des commentaires ou des suggestions à partager ?",
+    commentsPlaceHolder: "Partagez vos commentaires ou questions, nous sommes à votre écoute !",
     submit: "Soumettre",
     selectLanguage: "Sélectionner la langue",
     cancel: "Annuler",
-    thankYouMessage: "Merci! Vos réponses ont été enregistrées. Pour participer au tirage au sort, veuillez entrer votre email ci-dessous:",
+    thankYouMessage: "Merci pour votre temps. Entrez votre email ici pour participer au tirage au sort. De plus, recevez des informations et la présentation du projet. L'équipe Oxelta",
     emailPlaceholder: "Entrez votre email",
     participate: "Participer",
     thankYou: "Merci pour votre temps!",
@@ -201,7 +203,7 @@ export default function Page() {
   const handleEmailSubmit = async () => {
     setLoading(true);
     let emailIsValid = true;
-  
+
     try {
       // Validate email
       emailSchema.parse({ email });
@@ -211,12 +213,12 @@ export default function Page() {
         showError(error.errors[0].message);
       }
     }
-  
+
     if (!emailIsValid) {
       setLoading(false);
       return;
     }
-  
+
     try {
       // Check if the email already exists
       const emailQuery = query(collection(db, "sondage"), where("email", "==", email));
@@ -226,11 +228,11 @@ export default function Page() {
         setLoading(false);
         return;
       }
-  
+
       await updateDoc(doc(collection(db, "sondage"), docId), {
         email: email,
       });
-  
+
       // Send email
       const apiEndpoint = language === 'fr' ? '/api/sendFR' : '/api/sendEN';
       const response = await fetch(apiEndpoint, {
@@ -240,7 +242,7 @@ export default function Page() {
         },
         body: JSON.stringify({ email }),
       });
-  
+
       const result = await response.json();
       if (response.ok) {
         setShowFinalMessage(true);
@@ -251,12 +253,10 @@ export default function Page() {
     } catch (error) {
       showError('Something went wrong.');
     }
-  
+
     setLoading(false);
     setEmailDialogOpen(false);
   };
-  
-
 
   const handleCloseEmailDialog = () => {
     setEmailDialogOpen(false);
@@ -272,7 +272,7 @@ export default function Page() {
         <>
           <div className="w-full max-w-3xl mx-auto">
             <div className="flex justify-between items-center">
-              <Image src="/OXELTALogo2_PNG.png" alt="Logo" width={75} height={75} />
+              <Image src="/OXELTALogo2_PNG.png" alt="Logo" width={80} height={80} />
               <button
                 onClick={() => setOpen(true)}
                 className="text-sm text-gray-500 hover:text-gray-700 focus:outline-none"
@@ -314,15 +314,15 @@ export default function Page() {
                 render={({ field }) => (
                   <FormItem>
                     <MuiFormControl component="fieldset">
-                      <MuiFormLabel component="legend">{t.mobileGames}</MuiFormLabel>
+                      <MuiFormLabel component="legend" className="text-black font-pp-telegraf-bold">{t.mobileGames}</MuiFormLabel>
                       <RadioGroup
                         value={field.value}
                         onChange={field.onChange}
                         name="mobileGames"
-                        className="flex flex-col"
+                        className="flex flex-col font-pp-telegraf-regular text-black text-base leading-tight"
                       >
-                        <FormControlLabel value="Yes" control={<Radio style={{ color: '#25A6D5' }} />} label={t.yes} />
-                        <FormControlLabel value="No" control={<Radio style={{ color: '#25A6D5' }} />} label={t.no} />
+                        <FormControlLabel value="Yes" control={<Radio style={{ color: '#25A6D5' }} />} label={<span className="font-pp-telegraf-regular">{t.yes}</span>} />
+                        <FormControlLabel value="No" control={<Radio style={{ color: '#25A6D5' }} />} label={<span className="font-pp-telegraf-regular">{t.no}</span>} />
                       </RadioGroup>
                     </MuiFormControl>
                     <FormMessage />
@@ -336,16 +336,16 @@ export default function Page() {
                 render={({ field }) => (
                   <FormItem>
                     <MuiFormControl component="fieldset">
-                      <MuiFormLabel component="legend">{t.blockchainKnowledge}</MuiFormLabel>
+                      <MuiFormLabel component="legend" className="text-black font-pp-telegraf-bold">{t.blockchainKnowledge}</MuiFormLabel>
                       <RadioGroup
                         value={field.value}
                         onChange={field.onChange}
                         name="blockchainKnowledge"
-                        className="flex flex-col"
+                        className="flex flex-col font-pp-telegraf-regular text-black text-base leading-tight"
                       >
-                        <FormControlLabel value="Yes" control={<Radio style={{ color: '#25A6D5' }} />} label={t.yes} />
-                        <FormControlLabel value="a little" control={<Radio style={{ color: '#25A6D5' }} />} label={t.aLittle} />
-                        <FormControlLabel value="No" control={<Radio style={{ color: '#25A6D5' }} />} label={t.no} />
+                        <FormControlLabel value="Yes" control={<Radio style={{ color: '#25A6D5' }} />} label={<span className="font-pp-telegraf-regular">{t.yes}</span>} />
+                        <FormControlLabel value="a little" control={<Radio style={{ color: '#25A6D5' }} />} label={<span className="font-pp-telegraf-regular">{t.aLittle}</span>} />
+                        <FormControlLabel value="No" control={<Radio style={{ color: '#25A6D5' }} />} label={<span className="font-pp-telegraf-regular">{t.no}</span>} />
                       </RadioGroup>
                     </MuiFormControl>
                     <FormMessage />
@@ -358,7 +358,7 @@ export default function Page() {
                 name="interestMobileGameTokens"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t.interestMobileGameTokens}</FormLabel>
+                    <FormLabel className="font-pp-telegraf-bold text-base leading-tight text-black">{t.interestMobileGameTokens}</FormLabel>
                     <FormControl>
                       <Slider
                         value={field.value}
@@ -382,7 +382,7 @@ export default function Page() {
                 name="interestDigitalPurchases"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t.interestDigitalPurchases}</FormLabel>
+                    <FormLabel className="font-pp-telegraf-bold text-base leading-tight text-black">{t.interestDigitalPurchases}</FormLabel>
                     <FormControl>
                       <Slider
                         value={field.value}
@@ -406,7 +406,7 @@ export default function Page() {
                 name="interestClashOfClans"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t.interestClashOfClans}</FormLabel>
+                    <FormLabel className="font-pp-telegraf-bold text-base leading-tight text-black">{t.interestClashOfClans}</FormLabel>
                     <FormControl>
                       <Slider
                         value={field.value}
@@ -430,9 +430,9 @@ export default function Page() {
                 name="comments"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t.comments}</FormLabel>
+                    <FormLabel className="font-pp-telegraf-bold text-base leading-tight text-black">{t.comments}</FormLabel>
                     <FormControl>
-                      <Textarea placeholder={t.comments} {...field} className="border border-gray-300 focus:border-primary focus:ring focus:ring-primary" />
+                      <Textarea placeholder={t.commentsPlaceHolder} {...field} className="border font-pp-telegraf-regular border-gray-300 focus:border-primary focus:ring focus:ring-primary" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -444,10 +444,12 @@ export default function Page() {
               </Button>
             </form>
           </Form>
+
+
           <Dialog open={emailDialogOpen} onClose={handleCloseEmailDialog} maxWidth="xs" fullWidth>
-            <DialogTitle className="text-center">{t.thankYouTitle}</DialogTitle>
+            <DialogTitle className="text-center font-pp-telegraf-bold">{t.thankYouTitle}</DialogTitle>
             <DialogContent className="text-center">
-              <p className="mb-4">{t.thankYouMessage}</p>
+              <p className="mb-4 font-pp-telegraf-light">{t.thankYouMessage}</p>
               <div className="flex flex-col items-center space-y-4">
                 <Input
                   placeholder={t.emailPlaceholder}
@@ -455,7 +457,6 @@ export default function Page() {
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full"
                 />
-                {/* Validation message logic only on submit */}
                 {emailDialogOpen && email && (() => {
                   const result = emailSchema.safeParse({ email });
                   return !result.success && result.error ? (
@@ -470,8 +471,6 @@ export default function Page() {
               </Button>
             </DialogActions>
           </Dialog>
-
-
         </>
       ) : (
         <div className="flex flex-col items-center justify-center min-h-screen">
@@ -479,7 +478,7 @@ export default function Page() {
           <h1 className="text-center mt-4 font-pp-telegraf">{t.thankYou}</h1>
           {showParticipateButton && (
             <div className="flex flex-col items-center mt-4">
-              <h2 className="text-center">{t.participateInDraw}</h2>
+              <h2 className="text-center font-pp-telegraf-light">{t.participateInDraw}</h2>
               <Button onClick={() => setEmailDialogOpen(true)} className="mt-2">
                 {t.participate}
               </Button>
