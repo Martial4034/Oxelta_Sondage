@@ -1,5 +1,7 @@
 "use client";
 
+import { useRouter } from 'next/router';
+import { getSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 import { db } from '@/lib/firebase';
 import { collection, getDocs, DocumentData } from 'firebase/firestore';
@@ -9,6 +11,19 @@ import RadarChartComponent from '@/components/ui/RadarChartComponent';
 import { SurveyData } from '@/types/survey';
 
 const Dashboard = () => {
+  const router = useRouter();
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const session = await getSession();
+      if (!session) {
+        router.push('/login');
+      }
+    };
+    
+    checkAuth();
+  }, [router]);
+  
   const [surveyData, setSurveyData] = useState<SurveyData[]>([]);
 
   useEffect(() => {
