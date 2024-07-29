@@ -48,7 +48,7 @@ export async function POST(req: NextRequest) {
 
     // Envoyer l'email avec Resend
     const { data, error } = await resend.emails.send({
-      from: `${process.env.PROJECT_NAME} <admin@oxelta.io>`,
+      from: `Oxelta <admin@oxelta.io>`,
       to: [email],
       subject: 'Votre lien de connexion',
       text: '',
