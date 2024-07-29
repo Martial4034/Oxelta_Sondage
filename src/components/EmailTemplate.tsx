@@ -1,5 +1,4 @@
 import * as React from 'react';
-import Image from 'next/image';
 
 interface EmailTemplateProps {
   url: string;
@@ -10,7 +9,7 @@ export const SignInEmailTemplate: React.FC<Readonly<EmailTemplateProps>> = ({ ur
   <div style={{ fontFamily: 'Arial, sans-serif', margin: 0, padding: 0, backgroundColor: '#f4f4f4' }}>
     <div style={{ maxWidth: '600px', margin: '0 auto', backgroundColor: '#ffffff', boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)', borderRadius: '8px', overflow: 'hidden' }}>
       <div style={{ backgroundColor: '#25A6D5', color: '#ffffff', textAlign: 'center', padding: '20px' }}>
-        <Image src="https://i.imgur.com/2oXap3g.png" alt="Logo" width={150} height={150} style={{ marginBottom: '10px' }} />
+        <img src="https://i.imgur.com/2oXap3g.png" alt="Logo" style={{ maxWidth: '150px', marginBottom: '10px' }} />
       </div>
       <div style={{ padding: '20px', textAlign: 'center' }}>
         <h1 style={{ fontSize: '24px', color: '#333333' }}>Bienvenue sur ton Admin PANNEL</h1>
