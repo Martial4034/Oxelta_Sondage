@@ -76,11 +76,6 @@ const translations: Record<Language, { [key: string]: string }> = {
   },
 };
 
-const mapFrenchToEnglish: Record<string, string> = {
-  "Oui": "Yes",
-  "Non": "No",
-  "Un petit peu": "A little",
-};
 
 export default function Page() {
   const form = useForm<z.infer<typeof formSchema>>({
@@ -139,10 +134,19 @@ export default function Page() {
     return { userAgent, ip: ipData.ip };
   };
 
+  const translateBlockchainKnowledge = (value: string, language: Language): string => {
+    if (language === "fr") {
+      if (value === "Oui") return "Yes";
+      if (value === "Non") return "No";
+      if (value === "Un petit peu") return "A little";
+    }
+    return value;
+  };  
+  
   const handleSubmit = async (data: z.infer<typeof formSchema>) => {
     setLoading(true);
     const { userAgent, ip } = await getUserInfo();
-
+  
     // Check for duplicate submissions on client-side
     const qClient = query(collection(db, "sondage"), where("userId", "==", cookies.user));
     const querySnapshotClient = await getDocs(qClient);
@@ -151,7 +155,7 @@ export default function Page() {
       setLoading(false);
       return;
     }
-
+  
     // Check for duplicate submissions on server-side
     const qServer = query(collection(db, "sondage"), where("userAgent", "==", userAgent), where("ip", "==", ip));
     const querySnapshotServer = await getDocs(qServer);
@@ -160,18 +164,16 @@ export default function Page() {
       setLoading(false);
       return;
     }
-
+  
     const mobileGaming = data.mobileGames === "Yes";
-    const blockchainFamiliarity = language === "fr"
-      ? mapFrenchToEnglish[data.blockchainKnowledge] ?? "Unknown"
-      : data.blockchainKnowledge;
-
-    if (!blockchainFamiliarity) {
+    const blockchainFamiliarity = translateBlockchainKnowledge(data.blockchainKnowledge, language);
+  
+    if (blockchainFamiliarity === "Unknown") {
       showError(language === "en" ? "Invalid response for blockchain familiarity." : "Réponse invalide pour la familiarité avec la blockchain.");
       setLoading(false);
       return;
     }
-
+  
     try {
       const docRef = await addDoc(collection(db, "sondage"), {
         userId: cookies.user,
@@ -186,7 +188,7 @@ export default function Page() {
         userAgent,
         ip,
       });
-
+  
       setDocId(docRef.id);
       setLoading(false);
       setEmailDialogOpen(true);
@@ -195,6 +197,9 @@ export default function Page() {
       setLoading(false);
     }
   };
+  
+
+  
 
   const emailSchema = z.object({
     email: z.string().email({ message: language === "en" ? "Invalid email address" : "Adresse e-mail invalide" }),
@@ -240,7 +245,7 @@ export default function Page() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, docId }),
       });
 
       const result = await response.json();

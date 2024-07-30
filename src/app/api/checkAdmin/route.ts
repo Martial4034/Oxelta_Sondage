@@ -3,7 +3,7 @@ import { Resend } from 'resend';
 import { authAdmin, firestoreAdmin, FieldValue } from '@/lib/firebaseAdmin';
 import { SignInEmailTemplate } from '@/components/EmailTemplate';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resend = new Resend(process.env.RESEND_API_KEY_ADMIN);
 
 export async function POST(req: NextRequest) {
   const { email } = await req.json();

@@ -1,12 +1,15 @@
+// types/survey.ts
 export interface SurveyData {
-    userId: string;
-    responseDate: Date;
-    mobileGaming: boolean;
-    blockchainFamiliarity: 'Oui' | 'Un petit peu' | 'Non';
-    interestInEarningTokens: number;
-    interestInDigitalAssets: number;
-    interestInClashOfClans: number;
-    email?: string;
-    country?: string;
-  }
-  
+  idEmail: string;
+  mobileGaming: boolean;
+  blockchainFamiliarity: string;
+  interestInClashOfClans: number;
+  interestInDigitalAssets: number;
+  interestInEarningTokens: number;
+  userId: string;
+  responseDate: Date;
+  country: string;
+  email?: string;
+}
+
+export type SurveyDataField = keyof SurveyData;
