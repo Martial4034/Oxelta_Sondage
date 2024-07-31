@@ -1,4 +1,3 @@
-// components/EmailStatusTable.tsx
 import { useEffect, useState } from 'react';
 import {
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
