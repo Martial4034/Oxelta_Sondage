@@ -1,9 +1,5 @@
-// src/app/api/uploadPdf/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { promises as fs } from 'fs';
-import { join } from 'path';
-
-const UPLOAD_DIR = join(process.cwd(), 'public', 'pdfs');
+import { storageAdmin } from '@/lib/firebaseAdmin';
 
 export async function POST(req: NextRequest) {
   try {
@@ -15,9 +11,15 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Invalid file upload' }, { status: 400 });
     }
 
-    const filePath = join(UPLOAD_DIR, fileName);
     const arrayBuffer = await file.arrayBuffer();
-    await fs.writeFile(filePath, Buffer.from(arrayBuffer));
+    const buffer = Buffer.from(arrayBuffer);
+
+    const fileRef = storageAdmin.file(`pdfs/${fileName}`);
+    await fileRef.save(buffer, {
+      metadata: {
+        contentType: file.type,
+      },
+    });
 
     return NextResponse.json({ message: 'File uploaded successfully' }, { status: 200 });
   } catch (error) {
