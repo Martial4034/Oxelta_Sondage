@@ -13,6 +13,7 @@ import BarChartComponent from '@/components/ui/BarChartComponent';
 import { ChartData } from 'chart.js';
 import { SurveyData } from '@/types/survey';
 import EmailStatusTable from '@/components/EmailStatusTable';
+import UploadPdfButton from '@/components/UploadPdfButton';
 import { Container, Typography, Box, Button, Grid, Paper } from '@mui/material';
 
 const Dashboard = () => {
@@ -227,8 +228,8 @@ const Dashboard = () => {
   }
 
   const emailDocs = surveyData
-  .filter(doc => doc.email && doc.idEmail)
-  .map(doc => ({ email: doc.email!, idEmail: doc.idEmail! }));
+    .filter(doc => doc.email && doc.idEmail)
+    .map(doc => ({ email: doc.email!, idEmail: doc.idEmail! }));
 
   return (
     <Container>
@@ -240,6 +241,7 @@ const Dashboard = () => {
           <Button variant="contained">Filtre 1</Button>
           <Button variant="contained">Filtre 2</Button>
           <Button variant="contained">Filtre 3</Button>
+          <UploadPdfButton />
         </Box>
         <Grid container spacing={2}>
           <Grid item xs={12} md={4}>
