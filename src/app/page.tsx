@@ -2,13 +2,15 @@
 
 import * as React from "react";
 import * as z from "zod";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormField, FormItem, FormLabel, FormMessage, FormControl } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Slider, Radio, RadioGroup, FormControlLabel, FormControl as MuiFormControl, FormLabel as MuiFormLabel, Dialog, DialogActions, DialogContent, DialogTitle, CircularProgress, Snackbar, Alert } from "@mui/material";
+import { Slider, Radio, RadioGroup, FormControlLabel, FormControl as MuiFormControl, FormLabel as MuiFormLabel, CircularProgress, Snackbar, Alert, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
 import { db } from "@/lib/firebase";
 import { addDoc, collection, updateDoc, doc, getDocs, query, where, Timestamp } from "firebase/firestore";
 import { v4 as uuidv4 } from 'uuid';
@@ -24,7 +26,6 @@ const formSchema = z.object({
   interestClashOfClans: z.number().min(0).max(10),
   comments: z.string().optional(),
 });
-
 
 const languages = ['en', 'fr'] as const;
 type Language = (typeof languages)[number];
@@ -76,7 +77,6 @@ const translations: Record<Language, { [key: string]: string }> = {
   },
 };
 
-
 export default function Page() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -98,7 +98,7 @@ export default function Page() {
   const [docId, setDocId] = React.useState("");
   const [cookies, setCookie] = useCookies(['user']);
   const [showFinalMessage, setShowFinalMessage] = React.useState(false);
-  const [showParticipateButton, setShowParticipateButton] = React.useState(false);
+  const [emailSubmitted, setEmailSubmitted] = React.useState(false);
   const [snackbarOpen, setSnackbarOpen] = React.useState(false);
   const [snackbarMessage, setSnackbarMessage] = React.useState('');
   const [snackbarSeverity, setSnackbarSeverity] = React.useState<'success' | 'error'>('success');
@@ -107,6 +107,7 @@ export default function Page() {
     setSnackbarSeverity('error');
     setSnackbarOpen(true);
   };
+  const router = useRouter();
 
   React.useEffect(() => {
     const languageSelected = localStorage.getItem("languageSelected");
@@ -141,12 +142,12 @@ export default function Page() {
       if (value === "Un petit peu") return "A little";
     }
     return value;
-  };  
-  
+  };
+
   const handleSubmit = async (data: z.infer<typeof formSchema>) => {
     setLoading(true);
     const { userAgent, ip } = await getUserInfo();
-  
+
     // Check for duplicate submissions on client-side
     const qClient = query(collection(db, "sondage"), where("userId", "==", cookies.user));
     const querySnapshotClient = await getDocs(qClient);
@@ -155,7 +156,7 @@ export default function Page() {
       setLoading(false);
       return;
     }
-  
+
     // Check for duplicate submissions on server-side
     const qServer = query(collection(db, "sondage"), where("userAgent", "==", userAgent), where("ip", "==", ip));
     const querySnapshotServer = await getDocs(qServer);
@@ -164,16 +165,16 @@ export default function Page() {
       setLoading(false);
       return;
     }
-  
+
     const mobileGaming = data.mobileGames === "Yes";
     const blockchainFamiliarity = translateBlockchainKnowledge(data.blockchainKnowledge, language);
-  
+
     if (blockchainFamiliarity === "Unknown") {
       showError(language === "en" ? "Invalid response for blockchain familiarity." : "Réponse invalide pour la familiarité avec la blockchain.");
       setLoading(false);
       return;
     }
-  
+
     try {
       const docRef = await addDoc(collection(db, "sondage"), {
         userId: cookies.user,
@@ -188,7 +189,7 @@ export default function Page() {
         userAgent,
         ip,
       });
-  
+
       setDocId(docRef.id);
       setLoading(false);
       setEmailDialogOpen(true);
@@ -197,9 +198,6 @@ export default function Page() {
       setLoading(false);
     }
   };
-  
-
-  
 
   const emailSchema = z.object({
     email: z.string().email({ message: language === "en" ? "Invalid email address" : "Adresse e-mail invalide" }),
@@ -250,8 +248,8 @@ export default function Page() {
 
       const result = await response.json();
       if (response.ok) {
-        setShowFinalMessage(true);
-        setShowParticipateButton(false);
+        setEmailSubmitted(true);
+        router.push('https://www.oxelta.io/'); // Redirection après validation réussie
       } else {
         showError(result.error || 'Something went wrong.');
       }
@@ -260,13 +258,11 @@ export default function Page() {
     }
 
     setLoading(false);
-    setEmailDialogOpen(false);
   };
 
   const handleCloseEmailDialog = () => {
     setEmailDialogOpen(false);
-    setShowFinalMessage(true);
-    setShowParticipateButton(true);
+    setShowFinalMessage(true); 
   };
 
   const t = translations[language];
@@ -293,23 +289,6 @@ export default function Page() {
               <p className="text-gray-500 text-sm">{t.estimatedTime}</p>
             </div>
           </div>
-
-          <Dialog open={open} onClose={() => setOpen(false)} maxWidth="xs" fullWidth>
-            <DialogTitle className="text-center">{t.selectLanguage}</DialogTitle>
-            <DialogContent>
-              <div className="flex justify-center space-x-4">
-                <button onClick={() => handleLanguageSelect("en")} className="border-none bg-transparent p-0">
-                  <Image src="/flags/uk.png" alt="English" width={96} height={64} />
-                </button>
-                <button onClick={() => handleLanguageSelect("fr")} className="border-none bg-transparent p-0">
-                  <Image src="/flags/fr.png" alt="Français" width={96} height={64} />
-                </button>
-              </div>
-            </DialogContent>
-            <DialogActions className="flex justify-center">
-              <Button onClick={() => setOpen(false)}>{t.cancel}</Button>
-            </DialogActions>
-          </Dialog>
 
           <Form {...form}>
             <form onSubmit={form.handleSubmit(handleSubmit)} className="w-full max-w-2xl mx-auto flex flex-col gap-4">
@@ -449,10 +428,8 @@ export default function Page() {
               </Button>
             </form>
           </Form>
-
-
           <Dialog open={emailDialogOpen} onClose={handleCloseEmailDialog} maxWidth="xs" fullWidth>
-            <DialogTitle className="text-center font-pp-telegraf-bold">{t.thankYouTitle}</DialogTitle>
+            <DialogTitle className="text-center font-pp-telegraf-bold">{t.thankYou}</DialogTitle>
             <DialogContent className="text-center">
               <p className="mb-4 font-pp-telegraf-light">{t.thankYouMessage}</p>
               <div className="flex flex-col items-center space-y-4">
@@ -481,11 +458,22 @@ export default function Page() {
         <div className="flex flex-col items-center justify-center min-h-screen">
           <Image src="/4.HomePage.png" alt="Logo" width={300} height={300} />
           <h1 className="text-center mt-4 font-pp-telegraf">{t.thankYou}</h1>
-          {showParticipateButton && (
-            <div className="flex flex-col items-center mt-4">
-              <h2 className="text-center font-pp-telegraf-light">{t.participateInDraw}</h2>
-              <Button onClick={() => setEmailDialogOpen(true)} className="mt-2">
-                {t.participate}
+          {!emailSubmitted && (
+            <div className="flex flex-col items-center space-y-4 mt-4">
+              <Input
+                placeholder={t.emailPlaceholder}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full"
+              />
+              {email && (() => {
+                const result = emailSchema.safeParse({ email });
+                return !result.success && result.error ? (
+                  <p className="text-red-500">{result.error.errors[0].message}</p>
+                ) : null;
+              })()}
+              <Button onClick={handleEmailSubmit} disabled={loading}>
+                {loading ? <CircularProgress size={24} /> : t.participate}
               </Button>
             </div>
           )}

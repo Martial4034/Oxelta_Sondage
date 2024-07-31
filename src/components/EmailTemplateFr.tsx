@@ -17,7 +17,7 @@ export const EmailTemplateFr: React.FC<Readonly<EmailTemplateProps>> = ({ email 
         <p style={{ fontSize: '16px', color: '#555555' }}>Email: {email}</p>
       </div>
       <div style={{ padding: '20px', textAlign: 'center', backgroundColor: '#f4f4f4' }}>
-        <a href="https://drive.google.com/file/d/1QRQ3wGeuKL0HvPcTx-uXW-dfUK-SbiuB/view" style={{ display: 'inline-block', padding: '10px 20px', color: '#ffffff', backgroundColor: '#25A6D5', borderRadius: '4px', textDecoration: 'none', fontSize: '16px' }}>Voir la documentation</a>
+        <a href="https://sondage.oxelta.io/pdf-viewer-vf" style={{ display: 'inline-block', padding: '10px 20px', color: '#ffffff', backgroundColor: '#25A6D5', borderRadius: '4px', textDecoration: 'none', fontSize: '16px' }}>Voir la documentation</a>
       </div>
     </div>
   </div>
