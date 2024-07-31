@@ -89,8 +89,7 @@ const PDFViewerUK: React.FC = () => {
 
         <div className="h-full flex justify-center mx-auto">
           <Document
-            file="https://firebasestorage.googleapis.com/v0/b/oxelta.appspot.com/o/pdfs%2Fdeck_vf.pdf?alt=media&token=298b11ba-b460-4f68-b259-a396a6f1c16d"
-            onLoadSuccess={onDocumentLoadSuccess}
+            file="https://firebasestorage.googleapis.com/v0/b/oxelta.appspot.com/o/pdfs%2Fdeck_vf.pdf?alt=media&token=298b11ba-b460-4f68-b259-a396a6f1c16d"            onLoadSuccess={onDocumentLoadSuccess}
             options={options}
             renderMode="canvas"
             className=""
