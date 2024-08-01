@@ -24,3 +24,21 @@ export const authAdmin = admin.auth();
 export const firestoreAdmin = admin.firestore();
 export const storageAdmin = admin.storage().bucket();
 export const FieldValue = admin.firestore.FieldValue;
+
+// Fonction pour obtenir une URL signée pour deck_uk.pdf
+export async function getSignedUrlForUkPdf(): Promise<string> {
+  const [url] = await storageAdmin.file('pdfs/deck_uk.pdf').getSignedUrl({
+    action: 'read',
+    expires: Date.now() + 600000 * 60 * 1000, // L'URL expire dans 600000 minutes soit 10 000 heures soit 416 jours
+  });
+  return url;
+}
+
+// Fonction pour obtenir une URL signée pour deck_vf.pdf
+export async function getSignedUrlForVfPdf(): Promise<string> {
+  const [url] = await storageAdmin.file('pdfs/deck_vf.pdf').getSignedUrl({
+    action: 'read',
+    expires: Date.now() + 600000 * 60 * 1000, // L'URL expire dans 600000 minutes soit 10 000 heures soit 416 jours
+  });
+  return url;
+}

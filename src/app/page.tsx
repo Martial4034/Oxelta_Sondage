@@ -262,7 +262,7 @@ export default function Page() {
 
   const handleCloseEmailDialog = () => {
     setEmailDialogOpen(false);
-    setShowFinalMessage(true); 
+    setShowFinalMessage(true);
   };
 
   const t = translations[language];
@@ -289,6 +289,23 @@ export default function Page() {
               <p className="text-gray-500 text-sm">{t.estimatedTime}</p>
             </div>
           </div>
+
+          <Dialog open={open} onClose={() => setOpen(false)} maxWidth="xs" fullWidth>
+            <DialogTitle className="text-center">{t.selectLanguage}</DialogTitle>
+            <DialogContent>
+              <div className="flex justify-center space-x-4">
+                <button onClick={() => handleLanguageSelect("en")} className="border-none bg-transparent p-0">
+                  <Image src="/flags/uk.png" alt="English" width={96} height={64} />
+                </button>
+                <button onClick={() => handleLanguageSelect("fr")} className="border-none bg-transparent p-0">
+                  <Image src="/flags/fr.png" alt="Français" width={96} height={64} />
+                </button>
+              </div>
+            </DialogContent>
+            <DialogActions className="flex justify-center">
+              <Button onClick={() => setOpen(false)}>{t.cancel}</Button>
+            </DialogActions>
+          </Dialog>
 
           <Form {...form}>
             <form onSubmit={form.handleSubmit(handleSubmit)} className="w-full max-w-2xl mx-auto flex flex-col gap-4">
