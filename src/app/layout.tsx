@@ -1,6 +1,15 @@
 // src/app/layout.tsx
 
-import { Metadata } from 'next';
+import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
+import SessionProvider from './SessionProvider';
+import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/next';
+import './globals.css';
+import React from 'react';
+import { DynamicTitle } from '@/components/DynamicTitle';
+
+const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: 'Sondage Oxelta',
@@ -10,32 +19,27 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode;
-}) {
-  // Determine the title based on the hostname
-  let title = 'Sondage Oxelta';
-
-  if (typeof window !== 'undefined') {
-    const hostname = window.location.hostname;
-    if (hostname.includes('deck.vf.oxelta.io')) {
-      title = 'Deck Oxelta FR';
-    } else if (hostname.includes('deck.oxelta.io')) {
-      title = 'Deck Oxelta EN';
-    }
-  }
-
+}>) {
   return (
     <html lang="en">
       <head>
-        <title>{title}</title>
+        {/* Metadata title is the default title for SSR, DynamicTitle will adjust it */}
         <meta
           name="description"
           content="Oxelta, the future of gaming with Web 3. Play and earn OXLT tokens with our innovative ecosystem of play-and-earn games, Web 3, NFTs, blockchain games, crypto rewards, and game economy"
         />
         {/* Add other meta tags here */}
       </head>
-      <body>{children}</body>
+      <body className={`${inter.className} h-full`}>
+        <SpeedInsights />
+        <Analytics />
+        <SessionProvider>
+          <DynamicTitle /> {/* Insert the client-side logic for dynamic titles */}
+          {children}
+        </SessionProvider>
+      </body>
     </html>
   );
 }
