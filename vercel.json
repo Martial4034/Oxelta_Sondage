@@ -1,0 +1,15 @@
+{
+    "rewrites": [
+      {
+        "source": "/",
+        "destination": "/pdf-viewer-vf",
+        "has": [{ "type": "host", "value": "deck-vf.oxelta.io" }]
+      },
+      {
+        "source": "/",
+        "destination": "/pdf-viewer-uk",
+        "has": [{ "type": "host", "value": "deck.oxelta.io" }]
+      }
+    ]
+  }
+  

@@ -7,7 +7,7 @@ interface PDFLoaderProps {
   signedUrl: string;
 }
 
-const PDFLoader: React.FC<PDFLoaderProps> = ({ signedUrl }) => {
+const  PDFLoader: React.FC<PDFLoaderProps> = ({ signedUrl }) => {
   useEffect(() => {
     if (signedUrl) {
       window.location.href = signedUrl;
@@ -17,7 +17,7 @@ const PDFLoader: React.FC<PDFLoaderProps> = ({ signedUrl }) => {
   return (
     <Container
       component="main"
-      maxWidth="xs"
+      maxWidth="xl"
       sx={{
         height: '100vh',
         display: 'flex',

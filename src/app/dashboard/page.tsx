@@ -10,7 +10,7 @@ import BarChartComponent from '@/components/ui/BarChartComponent';
 import PieChartComponent from '@/components/ui/PieChartComponent';
 import EmailStatusTable from '@/components/EmailStatusTable';
 import UploadPdfButton from '@/components/UploadPdfButton';
-import { Container, Typography, Box, Grid, Card, CardContent, Button, Menu, MenuItem, useMediaQuery, useTheme } from '@mui/material';
+import { Container, Typography, Box, Grid, Card, CardContent, Button, Menu, MenuItem, Checkbox, ListItemText, useMediaQuery, useTheme } from '@mui/material';
 import { useFetchSurveyData } from '@/lib/useFetchSurveyData';
 
 const Dashboard = () => {
@@ -19,8 +19,12 @@ const Dashboard = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [anchorElEmail, setAnchorElEmail] = useState<null | HTMLElement>(null);
+  const [anchorElGaming, setAnchorElGaming] = useState<null | HTMLElement>(null);
+  const [anchorElBlockchain, setAnchorElBlockchain] = useState<null | HTMLElement>(null);
   const [emailFilter, setEmailFilter] = useState<'withEmail' | 'withoutEmail' | undefined>();
+  const [mobileGamingFilter, setMobileGamingFilter] = useState<'true' | 'false' | 'all'>('all');
+  const [blockchainFilter, setBlockchainFilter] = useState<('yes' | 'no' | 'a little')[]>(['yes', 'no', 'a little']);
 
   const {
     surveyData,
@@ -38,7 +42,7 @@ const Dashboard = () => {
     interestInClashOfClansData,
     interestInDigitalAssetsData,
     interestInEarningTokensData,
-  } = useFetchSurveyData(emailFilter);
+  } = useFetchSurveyData({ emailFilter, mobileGamingFilter, blockchainFilter });
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -46,17 +50,48 @@ const Dashboard = () => {
     }
   }, [status, router]);
 
-  const handleFilterClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
+  const handleEmailFilterClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorElEmail(event.currentTarget);
   };
 
-  const handleFilterClose = () => {
-    setAnchorEl(null);
+  const handleEmailFilterClose = () => {
+    setAnchorElEmail(null);
   };
 
-  const handleFilterSelect = (filter: 'withEmail' | 'withoutEmail' | undefined) => {
+  const handleEmailFilterSelect = (filter: 'withEmail' | 'withoutEmail' | undefined) => {
     setEmailFilter(filter);
-    handleFilterClose();
+    handleEmailFilterClose();
+  };
+
+  const handleGamingFilterClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorElGaming(event.currentTarget);
+  };
+
+  const handleGamingFilterClose = () => {
+    setAnchorElGaming(null);
+  };
+
+  const handleGamingFilterSelect = (filter: 'true' | 'false' | 'all') => {
+    setMobileGamingFilter(filter);
+    handleGamingFilterClose();
+  };
+
+  const handleBlockchainFilterClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorElBlockchain(event.currentTarget);
+  };
+
+  const handleBlockchainFilterClose = () => {
+    setAnchorElBlockchain(null);
+  };
+
+  const handleBlockchainFilterChange = (option: 'yes' | 'no' | 'a little') => {
+    setBlockchainFilter((prev) => {
+      if (prev.includes(option)) {
+        return prev.filter(item => item !== option);
+      } else {
+        return [...prev, option];
+      }
+    });
   };
 
   if (status === 'loading' || loading) {
@@ -78,16 +113,48 @@ const Dashboard = () => {
           Tableau de bord
         </Typography>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
-          <Button variant="contained" onClick={handleFilterClick}>
-            Filtre 1
+          <Button variant="contained" onClick={handleEmailFilterClick}>
+            Filtre Email
           </Button>
-          <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleFilterClose}>
-            <MenuItem onClick={() => handleFilterSelect(undefined)}>Tous les utilisateurs</MenuItem>
-            <MenuItem onClick={() => handleFilterSelect('withEmail')}>Avec Email</MenuItem>
-            <MenuItem onClick={() => handleFilterSelect('withoutEmail')}>Sans Email</MenuItem>
+          <Menu anchorEl={anchorElEmail} open={Boolean(anchorElEmail)} onClose={handleEmailFilterClose}>
+            <MenuItem onClick={() => handleEmailFilterSelect(undefined)}>Tous les utilisateurs</MenuItem>
+            <MenuItem onClick={() => handleEmailFilterSelect('withEmail')}>Avec Email</MenuItem>
+            <MenuItem onClick={() => handleEmailFilterSelect('withoutEmail')}>Sans Email</MenuItem>
           </Menu>
-          <Button variant="contained">Filtre 2</Button>
-          <Button variant="contained">Filtre 3</Button>
+          <Button variant="contained" onClick={handleGamingFilterClick}>
+            Filtre Jeux Mobiles
+          </Button>
+          <Menu anchorEl={anchorElGaming} open={Boolean(anchorElGaming)} onClose={handleGamingFilterClose}>
+            <MenuItem onClick={() => handleGamingFilterSelect('all')}>Tous</MenuItem>
+            <MenuItem onClick={() => handleGamingFilterSelect('true')}>Oui</MenuItem>
+            <MenuItem onClick={() => handleGamingFilterSelect('false')}>Non</MenuItem>
+          </Menu>
+          <Button variant="contained" onClick={handleBlockchainFilterClick}>
+            Filtre Blockchain
+          </Button>
+          <Menu anchorEl={anchorElBlockchain} open={Boolean(anchorElBlockchain)} onClose={handleBlockchainFilterClose}>
+            <MenuItem>
+              <Checkbox
+                checked={blockchainFilter.includes('yes')}
+                onChange={() => handleBlockchainFilterChange('yes')}
+              />
+              <ListItemText primary="Oui" />
+            </MenuItem>
+            <MenuItem>
+              <Checkbox
+                checked={blockchainFilter.includes('no')}
+                onChange={() => handleBlockchainFilterChange('no')}
+              />
+              <ListItemText primary="Non" />
+            </MenuItem>
+            <MenuItem>
+              <Checkbox
+                checked={blockchainFilter.includes('a little')}
+                onChange={() => handleBlockchainFilterChange('a little')}
+              />
+              <ListItemText primary="Un peu" />
+            </MenuItem>
+          </Menu>
           <UploadPdfButton />
         </Box>
         <Grid container spacing={2}>
@@ -206,6 +273,14 @@ const Dashboard = () => {
         </Grid>
         <EmailStatusTable emailDocs={emailDocs} />
       </Box>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+          <Button variant="contained" onClick={() => window.open('https://vercel.com/martials-projects-0761edc5/oxelta-sondage/analytics')}>
+            Sondage + deck
+          </Button>
+          <Button variant="contained" onClick={() => window.open('https://vercel.com/martials-projects-0761edc5/oxelta_data-room/analytics')}>
+            Data Room
+          </Button>
+        </Box>
     </Container>
   );
 };

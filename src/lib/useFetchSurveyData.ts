@@ -1,11 +1,17 @@
 import { useEffect, useState } from 'react';
-import { collection, getDocs, query, where } from 'firebase/firestore';
+import { collection, getDocs, query, where, Query } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { SurveyData } from '@/types/survey';
 import { ChartData } from 'chart.js';
 import { countDocumentsWithField } from '@/lib/firebaseUtils';
 
-export const useFetchSurveyData = (emailFilter?: 'withEmail' | 'withoutEmail') => {
+type Filters = {
+  emailFilter?: 'withEmail' | 'withoutEmail';
+  mobileGamingFilter?: 'true' | 'false' | 'all';
+  blockchainFilter?: ('yes' | 'no' | 'a little')[];
+};
+
+export const useFetchSurveyData = ({ emailFilter, mobileGamingFilter, blockchainFilter }: Filters) => {
   const [surveyData, setSurveyData] = useState<SurveyData[]>([]);
   const [loading, setLoading] = useState(true);
   const [totalResponses, setTotalResponses] = useState(0);
@@ -50,7 +56,7 @@ export const useFetchSurveyData = (emailFilter?: 'withEmail' | 'withoutEmail') =
     labels: Array.from({ length: 11 }, (_, i) => i.toString()), // ["0", "1", ..., "10"]
     datasets: [
       {
-        label: 'Interest in Clash of Clans',
+        label: 'Intérêt pour Clash of Clans',
         data: Array(11).fill(0),
         backgroundColor: '#36A2EB',
       },
@@ -60,7 +66,7 @@ export const useFetchSurveyData = (emailFilter?: 'withEmail' | 'withoutEmail') =
     labels: Array.from({ length: 11 }, (_, i) => i.toString()),
     datasets: [
       {
-        label: 'Interest in Digital Assets',
+        label: 'Intérêt pour les actifs numériques',
         data: Array(11).fill(0),
         backgroundColor: '#FF6384',
       },
@@ -70,7 +76,7 @@ export const useFetchSurveyData = (emailFilter?: 'withEmail' | 'withoutEmail') =
     labels: Array.from({ length: 11 }, (_, i) => i.toString()),
     datasets: [
       {
-        label: 'Interest in Earning Tokens',
+        label: 'Intérêt pour gagner des jetons',
         data: Array(11).fill(0),
         backgroundColor: '#FFCE56',
       },
@@ -81,18 +87,37 @@ export const useFetchSurveyData = (emailFilter?: 'withEmail' | 'withoutEmail') =
     const fetchData = async () => {
       setLoading(true);
 
-      const q = emailFilter
-        ? query(
-            collection(db, 'sondage'),
-            where('email', emailFilter === 'withEmail' ? '!=' : '==', '')
-          )
-        : collection(db, 'sondage');
+      // Initialisez la collection
+      let baseQuery: Query = collection(db, 'sondage');
 
-      const querySnapshot = await getDocs(q);
+      // Appliquez les filtres
+      if (emailFilter) {
+        baseQuery = query(
+          baseQuery,
+          where('email', emailFilter === 'withEmail' ? '!=' : '==', '')
+        );
+      }
+
+      if (mobileGamingFilter && mobileGamingFilter !== 'all') {
+        baseQuery = query(
+          baseQuery,
+          where('mobileGaming', '==', mobileGamingFilter === 'true')
+        );
+      }
+
+      if (blockchainFilter && blockchainFilter.length > 0) {
+        baseQuery = query(
+          baseQuery,
+          where('blockchainFamiliarity', 'in', blockchainFilter)
+        );
+      }
+
+      const querySnapshot = await getDocs(baseQuery);
       const data = querySnapshot.docs.map(doc => ({
         ...doc.data(),
         responseDate: doc.data().responseDate.toDate(),
       })) as SurveyData[];
+
       setSurveyData(data);
 
       const emailCount = countDocumentsWithField(data, 'email');
@@ -188,7 +213,7 @@ export const useFetchSurveyData = (emailFilter?: 'withEmail' | 'withoutEmail') =
           },
         ],
       });
-  
+
       setInterestInEarningTokensData({
         labels: Array.from({ length: 11 }, (_, i) => i.toString()),
         datasets: [
@@ -199,13 +224,13 @@ export const useFetchSurveyData = (emailFilter?: 'withEmail' | 'withoutEmail') =
           },
         ],
       });
-  
+
       setLoading(false);
     };
-  
+
     fetchData();
-  }, [emailFilter]);
-  
+  }, [emailFilter, mobileGamingFilter, blockchainFilter]);
+
   return {
     surveyData,
     loading,
@@ -223,5 +248,4 @@ export const useFetchSurveyData = (emailFilter?: 'withEmail' | 'withoutEmail') =
     interestInDigitalAssetsData,
     interestInEarningTokensData,
   };
-  };
-  
+};
