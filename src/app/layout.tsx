@@ -1,18 +1,29 @@
-import React from 'react';
+// src/app/layout.tsx
+
 import { Metadata } from 'next';
 
-interface RootLayoutProps {
-  children: React.ReactNode;
-  hostname: string;
-}
+export const metadata: Metadata = {
+  title: 'Sondage Oxelta',
+  description:
+    'Oxelta, the future of gaming with Web 3. Play and earn OXLT tokens with our innovative ecosystem of play-and-earn games, Web 3, NFTs, blockchain games, crypto rewards, and game economy',
+};
 
-export function RootLayout({ children, hostname }: RootLayoutProps) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   // Determine the title based on the hostname
-  const title = hostname.includes('deck.vf.oxelta.io')
-    ? 'Deck Oxelta FR'
-    : hostname.includes('deck.oxelta.io')
-    ? 'Deck Oxelta EN'
-    : 'Sondage Oxelta';
+  let title = 'Sondage Oxelta';
+
+  if (typeof window !== 'undefined') {
+    const hostname = window.location.hostname;
+    if (hostname.includes('deck.vf.oxelta.io')) {
+      title = 'Deck Oxelta FR';
+    } else if (hostname.includes('deck.oxelta.io')) {
+      title = 'Deck Oxelta EN';
+    }
+  }
 
   return (
     <html lang="en">
@@ -28,13 +39,3 @@ export function RootLayout({ children, hostname }: RootLayoutProps) {
     </html>
   );
 }
-
-// Note: getServerSideProps can be used on pages, but for App Router, we'll handle differently
-// Assuming usage with App Router
-export const metadata: Metadata = {
-  title: 'Sondage Oxelta',
-  description:
-    'Oxelta, the future of gaming with Web 3. Play and earn OXLT tokens with our innovative ecosystem of play-and-earn games, Web 3, NFTs, blockchain games, crypto rewards, and game economy',
-};
-
-export default RootLayout;
