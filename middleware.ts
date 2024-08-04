@@ -5,7 +5,7 @@ export function middleware(request: NextRequest) {
   const { hostname, pathname } = request.nextUrl;
 
   // Subdomain redirection logic
-  if (hostname === 'deck.vf.oxelta.io') {
+  if (hostname === 'deck.fr.oxelta.io') {
     // Redirect any request from deck.vf.oxelta.io to sondage.oxelta.io/pdf-viewer-vf
     return NextResponse.redirect('https://sondage.oxelta.io/pdf-viewer-vf');
   } else if (hostname === 'deck.oxelta.io') {
