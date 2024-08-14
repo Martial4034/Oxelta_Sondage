@@ -10,7 +10,7 @@ import BarChartComponent from '@/components/ui/BarChartComponent';
 import PieChartComponent from '@/components/ui/PieChartComponent';
 import EmailStatusTable from '@/components/EmailStatusTable';
 import UploadPdfButton from '@/components/UploadPdfButton';
-import { Container, Typography, Box, Grid, Card, CardContent, Button, Menu, MenuItem, Checkbox, ListItemText, useMediaQuery, useTheme } from '@mui/material';
+import { Container, Typography, Box, Grid, Card, CardContent, Button, Menu, MenuItem, Checkbox, ListItemText, useMediaQuery, useTheme, Slider } from '@mui/material';
 import { useFetchSurveyData } from '@/lib/useFetchSurveyData';
 
 const Dashboard = () => {
@@ -22,9 +22,15 @@ const Dashboard = () => {
   const [anchorElEmail, setAnchorElEmail] = useState<null | HTMLElement>(null);
   const [anchorElGaming, setAnchorElGaming] = useState<null | HTMLElement>(null);
   const [anchorElBlockchain, setAnchorElBlockchain] = useState<null | HTMLElement>(null);
+  const [anchorElInterests, setAnchorElInterests] = useState<null | HTMLElement>(null);
+
   const [emailFilter, setEmailFilter] = useState<'withEmail' | 'withoutEmail' | undefined>();
   const [mobileGamingFilter, setMobileGamingFilter] = useState<'true' | 'false' | 'all'>('all');
   const [blockchainFilter, setBlockchainFilter] = useState<('yes' | 'no' | 'a little')[]>(['yes', 'no', 'a little']);
+  // Define ranges explicitly as tuples [number, number]
+  const [clashOfClansRange, setClashOfClansRange] = useState<[number, number]>([0, 10]);
+  const [digitalAssetsRange, setDigitalAssetsRange] = useState<[number, number]>([0, 10]);
+  const [earningTokensRange, setEarningTokensRange] = useState<[number, number]>([0, 10]);
 
   const {
     surveyData,
@@ -42,7 +48,14 @@ const Dashboard = () => {
     interestInClashOfClansData,
     interestInDigitalAssetsData,
     interestInEarningTokensData,
-  } = useFetchSurveyData({ emailFilter, mobileGamingFilter, blockchainFilter });
+  } = useFetchSurveyData({
+    emailFilter,
+    mobileGamingFilter,
+    blockchainFilter,
+    clashOfClansRange,
+    digitalAssetsRange,
+    earningTokensRange,
+  });
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -86,12 +99,28 @@ const Dashboard = () => {
 
   const handleBlockchainFilterChange = (option: 'yes' | 'no' | 'a little') => {
     setBlockchainFilter((prev) => {
-      if (prev.includes(option)) {
-        return prev.filter(item => item !== option);
-      } else {
-        return [...prev, option];
+      const newFilter = prev.includes(option)
+        ? prev.filter(item => item !== option)
+        : [...prev, option];
+
+      // Check if no options are selected
+      if (newFilter.length === 0) {
+        return ['yes', 'no', 'a little']; // Default back to all if none are selected
       }
+      return newFilter;
     });
+  };
+
+  const handleInterestsFilterClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorElInterests(event.currentTarget);
+  };
+
+  const handleInterestsFilterClose = () => {
+    setAnchorElInterests(null);
+  };
+
+  const handleRangeChange = (setRange: (range: [number, number]) => void) => (event: Event, newValue: number | number[]) => {
+    setRange(newValue as [number, number]);
   };
 
   if (status === 'loading' || loading) {
@@ -112,6 +141,7 @@ const Dashboard = () => {
         <Typography variant="h4" component="h1" gutterBottom>
           Tableau de bord
         </Typography>
+
         <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
           <Button variant="contained" onClick={handleEmailFilterClick}>
             Filtre Email
@@ -121,6 +151,7 @@ const Dashboard = () => {
             <MenuItem onClick={() => handleEmailFilterSelect('withEmail')}>Avec Email</MenuItem>
             <MenuItem onClick={() => handleEmailFilterSelect('withoutEmail')}>Sans Email</MenuItem>
           </Menu>
+
           <Button variant="contained" onClick={handleGamingFilterClick}>
             Filtre Jeux Mobiles
           </Button>
@@ -129,6 +160,7 @@ const Dashboard = () => {
             <MenuItem onClick={() => handleGamingFilterSelect('true')}>Oui</MenuItem>
             <MenuItem onClick={() => handleGamingFilterSelect('false')}>Non</MenuItem>
           </Menu>
+
           <Button variant="contained" onClick={handleBlockchainFilterClick}>
             Filtre Blockchain
           </Button>
@@ -155,8 +187,51 @@ const Dashboard = () => {
               <ListItemText primary="Un peu" />
             </MenuItem>
           </Menu>
+
+          <Button variant="contained" onClick={handleInterestsFilterClick}>
+            Intérêts
+          </Button>
+          <Menu anchorEl={anchorElInterests} open={Boolean(anchorElInterests)} onClose={handleInterestsFilterClose}>
+            <Box sx={{ mx: 2, my: 1 }}>
+              <Typography gutterBottom>Intérêt Clash of Clans</Typography>
+              <Slider
+                value={clashOfClansRange}
+                onChange={handleRangeChange(setClashOfClansRange)}
+                valueLabelDisplay="auto"
+                min={0}
+                max={10}
+                step={1}
+              />
+            </Box>
+            <Box sx={{ mx: 2, my: 1 }}>
+              <Typography gutterBottom>Intérêt pour les actifs numériques</Typography>
+              <Slider
+                value={digitalAssetsRange}
+                onChange={handleRangeChange(setDigitalAssetsRange)}
+                valueLabelDisplay="auto"
+                min={0}
+                max={10}
+                step={1}
+              />
+            </Box>
+            <Box sx={{ mx: 2, my: 1 }}>
+              <Typography gutterBottom>Intérêt pour gagner des jetons</Typography>
+              <Slider
+                value={earningTokensRange}
+                onChange={handleRangeChange(setEarningTokensRange)}
+                valueLabelDisplay="auto"
+                min={0}
+                max={10}
+                step={1}
+              />
+            </Box>
+            <Button variant="outlined" onClick={handleInterestsFilterClose}>
+              Valider
+            </Button>
+          </Menu>
           <UploadPdfButton />
         </Box>
+
         <Grid container spacing={2}>
           {emailFilter === undefined && (
             <Grid item xs={12} md={4}>
@@ -273,14 +348,17 @@ const Dashboard = () => {
         </Grid>
         <EmailStatusTable emailDocs={emailDocs} />
       </Box>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-          <Button variant="contained" onClick={() => window.open('https://vercel.com/martials-projects-0761edc5/oxelta-sondage/analytics')}>
-            Sondage + deck
-          </Button>
-          <Button variant="contained" onClick={() => window.open('https://vercel.com/martials-projects-0761edc5/oxelta_data-room/analytics')}>
-            Data Room
-          </Button>
-        </Box>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+        <Button variant="contained" onClick={() => window.open('https://vercel.com/martials-projects-0761edc5/oxelta-sondage/analytics')}>
+          Sondage + deck
+        </Button>
+        <Button variant="contained" onClick={() => window.open('https://vercel.com/martials-projects-0761edc5/oxelta_data-room/analytics')}>
+          Data Room
+        </Button>
+        <Button variant="contained" onClick={() => window.open('https://analytics.google.com/analytics/web/?authuser=0&hl=fr#/p452841226/reports/intelligenthome?params=_u..nav%3Dmaui')}>
+          Site Oxelta.io
+        </Button>
+      </Box>
     </Container>
   );
 };

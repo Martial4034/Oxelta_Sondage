@@ -12,7 +12,7 @@ export const EmailTemplateFr: React.FC<Readonly<EmailTemplateProps>> = ({ email 
       </div>
       <div style={{ padding: '20px', textAlign: 'center' }}>
         <h1 style={{ fontSize: '24px', color: '#333333' }}>Merci de répondre à notre sondage!</h1>
-        <p style={{ fontSize: '16px', color: '#555555', lineHeight: 1.5 }}>Nous apprécions sincèrement votre participation et vos précieux commentaires. Votre opinion est très importante pour nous et nous aide à améliorer notre projet.</p>
+        <p style={{ fontSize: '16px', color: '#555555', lineHeight: 1.5 }}>Nous vous remercions pour votre participation et vos précieux commentaires. Votre avis est crucial pour améliorer notre projet. Vous recevrez bientôt un e-mail avec les règles du tirage au sort.</p>
         <img src="https://i.imgur.com/T7Kl3lC.png" alt="Oxelta" style={{ maxWidth: '100px' }} />
         <p style={{ fontSize: '16px', color: '#555555' }}>Email: {email}</p>
       </div>
