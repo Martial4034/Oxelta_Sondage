@@ -1,5 +1,3 @@
-// src/app/layout.tsx
-
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import SessionProvider from './SessionProvider';
@@ -10,8 +8,14 @@ import React from 'react';
 
 const inter = Inter({ subsets: ['latin'] });
 
-export async function generateMetadata({ request }: { request: any }): Promise<Metadata> {
-  const hostname = request?.headers?.host || '';
+export async function generateMetadata({
+  params,
+  headers,
+}: {
+  params: any;
+  headers: Headers;
+}): Promise<Metadata> {
+  const hostname = headers.get('host') || '';
 
   let title = 'Sondage Oxelta';
   let description =
