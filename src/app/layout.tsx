@@ -8,13 +8,16 @@ import React from 'react';
 
 const inter = Inter({ subsets: ['latin'] });
 
-// Utilisation de 'request' pour accéder au hostname
 export async function generateMetadata({
-  request,
+  params,
 }: {
-  request: Request;
+  params: any;
 }): Promise<Metadata> {
-  const hostname = request.headers.get('host') || '';
+  // Pour obtenir le hostname, on doit éventuellement utiliser des middlewares
+  // ou définir les informations nécessaires au niveau des routes.
+
+  // Par exemple, ici on utilise une logique simplifiée :
+  const hostname = typeof window !== 'undefined' ? window.location.hostname : '';
 
   let title = 'Sondage Oxelta';
   let description =
