@@ -1,15 +1,14 @@
 {
-    "rewrites": [
-      {
-        "source": "/",
-        "destination": "/pdf-viewer-vf",
-        "has": [{ "type": "host", "value": "deck-vf.oxelta.io" }]
-      },
-      {
-        "source": "/",
-        "destination": "/pdf-viewer-uk",
-        "has": [{ "type": "host", "value": "deck.oxelta.io" }]
-      }
-    ]
+  "rewrites": [
+    {
+      "source": "/pdf-viewer-uk",
+      "destination": "/pdf-viewer-uk",
+      "has": [{ "type": "host", "value": "deck.oxelta.io" }]
+    },
+    {
+      "source": "/pdf-viewer-vf",
+      "destination": "/pdf-viewer-vf",
+      "has": [{ "type": "host", "value": "deck.fr.oxelta.io" }]
+    }
+  ]
 }
-  
