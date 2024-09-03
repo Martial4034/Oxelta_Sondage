@@ -8,14 +8,13 @@ import React from 'react';
 
 const inter = Inter({ subsets: ['latin'] });
 
+// Utilisation de 'request' pour accéder au hostname
 export async function generateMetadata({
-  params,
-  headers,
+  request,
 }: {
-  params: any;
-  headers: Headers;
+  request: Request;
 }): Promise<Metadata> {
-  const hostname = headers.get('host') || '';
+  const hostname = request.headers.get('host') || '';
 
   let title = 'Sondage Oxelta';
   let description =
