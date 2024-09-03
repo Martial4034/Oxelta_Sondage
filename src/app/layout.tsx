@@ -7,15 +7,29 @@ import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import './globals.css';
 import React from 'react';
-import { DynamicTitle } from '@/components/DynamicTitle';
 
 const inter = Inter({ subsets: ['latin'] });
 
-export const metadata: Metadata = {
-  title: 'Oxelta',
-  description:
-    'Oxelta, the future of gaming with Web 3. Play and earn OXLT tokens with our innovative ecosystem of play-and-earn games, Web 3, NFTs, blockchain games, crypto rewards, and game economy',
-};
+export async function generateMetadata({ request }: { request: any }): Promise<Metadata> {
+  const hostname = request?.headers?.host || '';
+
+  let title = 'Sondage Oxelta';
+  let description =
+    'Oxelta, the future of gaming with Web 3. Play and earn OXLT tokens with our innovative ecosystem of play-and-earn games, Web 3, NFTs, blockchain games, crypto rewards, and game economy';
+
+  if (hostname.includes('deck.vf.oxelta.io')) {
+    title = 'Deck FR';
+    description = 'Description spécifique pour Deck FR';
+  } else if (hostname.includes('deck.oxelta.io')) {
+    title = 'Deck EN';
+    description = 'Description spécifique pour Deck EN';
+  }
+
+  return {
+    title,
+    description,
+  };
+}
 
 export default function RootLayout({
   children,
@@ -25,16 +39,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <meta
-          name="description"
-          content="Oxelta, the future of gaming with Web 3. Play and earn OXLT tokens with our innovative ecosystem of play-and-earn games, Web 3, NFTs, blockchain games, crypto rewards, and game economy"
-        />
+        {/* Les métadonnées générées dynamiquement apparaîtront ici */}
       </head>
       <body className={`${inter.className} h-full`}>
         <SpeedInsights />
         <Analytics />
         <SessionProvider>
-          <DynamicTitle />
           {children}
         </SessionProvider>
       </body>
