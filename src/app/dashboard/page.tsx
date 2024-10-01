@@ -188,47 +188,6 @@ const Dashboard = () => {
             </MenuItem>
           </Menu>
 
-          <Button variant="contained" onClick={handleInterestsFilterClick}>
-            Intérêts
-          </Button>
-          <Menu anchorEl={anchorElInterests} open={Boolean(anchorElInterests)} onClose={handleInterestsFilterClose}>
-            <Box sx={{ mx: 2, my: 1 }}>
-              <Typography gutterBottom>Intérêt Clash of Clans</Typography>
-              <Slider
-                value={clashOfClansRange}
-                onChange={handleRangeChange(setClashOfClansRange)}
-                valueLabelDisplay="auto"
-                min={0}
-                max={10}
-                step={1}
-              />
-            </Box>
-            <Box sx={{ mx: 2, my: 1 }}>
-              <Typography gutterBottom>Intérêt pour les actifs numériques</Typography>
-              <Slider
-                value={digitalAssetsRange}
-                onChange={handleRangeChange(setDigitalAssetsRange)}
-                valueLabelDisplay="auto"
-                min={0}
-                max={10}
-                step={1}
-              />
-            </Box>
-            <Box sx={{ mx: 2, my: 1 }}>
-              <Typography gutterBottom>Intérêt pour gagner des jetons</Typography>
-              <Slider
-                value={earningTokensRange}
-                onChange={handleRangeChange(setEarningTokensRange)}
-                valueLabelDisplay="auto"
-                min={0}
-                max={10}
-                step={1}
-              />
-            </Box>
-            <Button variant="outlined" onClick={handleInterestsFilterClose}>
-              Valider
-            </Button>
-          </Menu>
           <UploadPdfButton />
         </Box>
 
@@ -348,6 +307,10 @@ const Dashboard = () => {
         </Grid>
         <EmailStatusTable emailDocs={emailDocs} />
       </Box>
+
+      <Typography variant="h4" component="h1" gutterBottom>
+      Analytics
+      </Typography>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
         <Button variant="contained" onClick={() => window.open('https://vercel.com/martials-projects-0761edc5/oxelta-sondage/analytics')}>
           Sondage + deck

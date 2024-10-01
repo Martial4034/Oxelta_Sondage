@@ -54,37 +54,37 @@ export default function Signin() {
   };
 
   return (
-    <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8 bg-gray-100">
-      <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-        <img
-          className="mx-auto h-10 w-auto"
-          src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500"
-          alt="Your Company"
-        />
-        <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
-          Sign in to your account
-        </h2>
-      </div>
-
-      <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-        <div className="space-y-6">
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
-              Email address
-            </label>
-            <div className="mt-2">
-              <input
-                id="email"
-                name="email"
-                type="email"
-                autoComplete="email"
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="block w-full rounded-md border-0 bg-gray-50 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-              />
-            </div>
+    <div className="flex min-h-screen items-center justify-center bg-white">
+        <div className="w-full max-w-md px-6 py-12 bg-white text-black shadow-lg rounded-lg">
+          <div className="sm:mx-auto sm:w-full sm:max-w-md">
+            <img
+              className="mx-auto h-20 w-auto mb-8"
+              src="/oxelta_logo.png"
+              alt="Logo de l'application BisouRivage"
+            />
+            <h2 className="mt-4 text-center text-3xl font-bold tracking-tight text-black">
+              Connexion à votre compte
+            </h2>
           </div>
 
+          <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+            <div className="space-y-6">
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                  Adresse email
+                </label>
+                <div className="mt-2">
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  autoComplete="email"
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="block w-full rounded-md border-0 bg-gray-50 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                />
+                </div>
+              </div>
           <div>
             <button
               disabled={!email || isButtonDisabled}
@@ -107,5 +107,6 @@ export default function Signin() {
         </div>
       </div>
     </div>
+  </div>
   );
 }

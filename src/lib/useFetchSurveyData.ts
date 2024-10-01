@@ -128,17 +128,6 @@ export const useFetchSurveyData = ({
           );
         }
 
-        // Apply range filters
-        baseQuery = query(
-          baseQuery,
-          where('interestInClashOfClans', '>=', clashOfClansRange[0]),
-          where('interestInClashOfClans', '<=', clashOfClansRange[1]),
-          where('interestInDigitalAssets', '>=', digitalAssetsRange[0]),
-          where('interestInDigitalAssets', '<=', digitalAssetsRange[1]),
-          where('interestInEarningTokens', '>=', earningTokensRange[0]),
-          where('interestInEarningTokens', '<=', earningTokensRange[1])
-        );
-
         // Fetch the documents
         const querySnapshot = await getDocs(baseQuery);
         const data = querySnapshot.docs.map(doc => {
