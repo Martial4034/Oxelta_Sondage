@@ -40,6 +40,24 @@ export function middleware(request: NextRequest) {
     return response;
   }
 
+    // Redirection automatique pour sheet.oxelta.io vers /whitepaper-pdf-viewer-uk
+    if (hostname === 'sheet.oxelta.io' && pathname === '/') {
+      const response = NextResponse.redirect(new URL('/sheet-pdf-viewer-uk', request.url));
+      response.headers.set('X-SEO-Title', 'Sheet Paper Oxelta');
+      response.headers.set('X-SEO-Description', 'Go to the Oxelta sheet paper to learn more about our vision for the future of gaming with Web 3.0. Play and earn OXLT tokens with our innovative ecosystem of play-and-earn games.');
+      response.headers.set('X-SEO-Keywords', 'sheet paper, oxelta, solutions, web 3.0, play and earn, OXLT tokens, innovative ecosystem, play-and-earn games');
+      return response;
+    }
+  
+    // Redirection automatique pour whitepaper.fr.oxelta.io vers /whitepaper-pdf-viewer-vf
+    if (hostname === 'sheet.fr.oxelta.io' && pathname === '/') {
+      const response = NextResponse.redirect(new URL('/sheet-pdf-viewer-vf', request.url));
+      response.headers.set('X-SEO-Title', 'Sheet Paper Oxelta - VF');
+      response.headers.set('X-SEO-Description', 'Accédez au sheet paper Oxelta pour en savoir plus sur notre vision pour le futur du jeu vidéo avec Web 3.0. Jouez et gagnez des tokens OXLT avec notre écosystème innovant de jeux play-and-earn.');
+      response.headers.set('X-SEO-Keywords', 'sheet paper, oxelta, solutions, web 3.0, play and earn, OXLT tokens, innovative ecosystem, play-and-earn games, french');
+      return response;
+    }
+
   // Gestion de la session pour les pages protégées de sondage.oxelta.io
   const sessionCookie = request.cookies.get('next-auth.session-token') || request.cookies.get('__Secure-next-auth.session-token');
 
@@ -54,5 +72,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/', '/dashboard/:path*', '/api/uploadPdf', '/pdf-viewer-vf', '/pdf-viewer-uk', '/whitepaper-pdf-viewer-uk', '/whitepaper-pdf-viewer-vf'],
+  matcher: ['/', '/dashboard/:path*', '/api/uploadPdf', '/pdf-viewer-vf', '/pdf-viewer-uk', '/whitepaper-pdf-viewer-uk', '/whitepaper-pdf-viewer-vf', '/sheet-pdf-viewer-uk', '/sheet-pdf-viewer-vf'],
 };

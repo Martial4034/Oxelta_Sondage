@@ -113,6 +113,30 @@ const UploadPdfButton: React.FC = () => {
             onChange={(e) => handleFileChange(e, 'whitepaper_vf.pdf')}
           />
         </MenuItem>
+        <MenuItem>
+          <label htmlFor="sheet_uk.pdf" style={{ cursor: 'pointer' }}>
+            sheet_uk.pdf
+          </label>
+          <input
+            id="sheet_uk.pdf"
+            type="file"
+            accept="application/pdf"
+            style={{ display: 'none' }}
+            onChange={(e) => handleFileChange(e, 'sheet_uk.pdf')}
+          />
+        </MenuItem>
+        <MenuItem>
+          <label htmlFor="sheet_vf.pdf" style={{ cursor: 'pointer' }}>
+            sheet_vf.pdf
+          </label>
+          <input
+            id="sheet_vf.pdf"
+            type="file"
+            accept="application/pdf"
+            style={{ display: 'none' }}
+            onChange={(e) => handleFileChange(e, 'sheet_vf.pdf')}
+          />
+        </MenuItem>
       </Menu>
       <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={() => setSnackbarOpen(false)}>
         <Alert onClose={() => setSnackbarOpen(false)} severity={snackbarSeverity} sx={{ width: '100%' }}>
