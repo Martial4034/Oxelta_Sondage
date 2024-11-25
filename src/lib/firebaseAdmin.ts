@@ -76,3 +76,21 @@ export async function getSignedUrlForVfSheetPdf(): Promise<string> {
   });
   return url;
 }
+
+// Fonction pour obtenir une URL signée pour oral_uk.pdf
+export async function getSignedUrlForUkOralPdf(): Promise<string> {
+  const [url] = await storageAdmin.file('pdfs/oral_uk.pdf').getSignedUrl({
+    action: 'read',
+    expires: Date.now() + 600000 * 60 * 1000, // L'URL expire dans 600000 minutes soit 10 000 heures soit 416 jours
+  });
+  return url;
+}
+
+// Fonction pour obtenir une URL signée pour oral_vf.pdf
+export async function getSignedUrlForVfOralPdf(): Promise<string> {
+  const [url] = await storageAdmin.file('pdfs/oral_vf.pdf').getSignedUrl({
+    action: 'read',
+    expires: Date.now() + 600000 * 60 * 1000, // L'URL expire dans 600000 minutes soit 10 000 heures soit 416 jours
+  });
+  return url;
+}
