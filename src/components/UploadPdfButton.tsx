@@ -163,7 +163,7 @@ const UploadPdfButton: React.FC = () => {
         </MenuItem>
         <MenuItem>
           <label htmlFor="pub_flappy_uk.pdf" style={{ cursor: 'pointer' }}>
-            oral_uk.pdf
+          pub_flappy_uk.pdf
           </label>
           <input
             id="pub_flappy_uk.pdf"
@@ -175,7 +175,7 @@ const UploadPdfButton: React.FC = () => {
         </MenuItem>
         <MenuItem>
           <label htmlFor="pub_flappy_vf.pdf" style={{ cursor: 'pointer' }}>
-            oral_vf.pdf
+          pub_flappy_vf.pdf
           </label>
           <input
             id="pub_flappy_vf.pdf"
@@ -187,7 +187,7 @@ const UploadPdfButton: React.FC = () => {
         </MenuItem>
         <MenuItem>
           <label htmlFor="flappy_uk.pdf" style={{ cursor: 'pointer' }}>
-            oral_uk.pdf
+          flappy_uk.pdf
           </label>
           <input
             id="flappy_uk.pdf"
@@ -199,7 +199,7 @@ const UploadPdfButton: React.FC = () => {
         </MenuItem>
         <MenuItem>
           <label htmlFor="flappy_vf.pdf" style={{ cursor: 'pointer' }}>
-            oral_vf.pdf
+          flappy_vf.pdf
           </label>
           <input
             id="flappy_vf.pdf"
