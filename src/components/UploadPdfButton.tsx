@@ -161,6 +161,54 @@ const UploadPdfButton: React.FC = () => {
             onChange={(e) => handleFileChange(e, 'oral_vf.pdf')}
           />
         </MenuItem>
+        <MenuItem>
+          <label htmlFor="pub_flappy_uk.pdf" style={{ cursor: 'pointer' }}>
+            oral_uk.pdf
+          </label>
+          <input
+            id="pub_flappy_uk.pdf"
+            type="file"
+            accept="application/pdf"
+            style={{ display: 'none' }}
+            onChange={(e) => handleFileChange(e, 'pub_flappy_uk.pdf')}
+          />
+        </MenuItem>
+        <MenuItem>
+          <label htmlFor="pub_flappy_vf.pdf" style={{ cursor: 'pointer' }}>
+            oral_vf.pdf
+          </label>
+          <input
+            id="pub_flappy_vf.pdf"
+            type="file"
+            accept="application/pdf"
+            style={{ display: 'none' }}
+            onChange={(e) => handleFileChange(e, 'pub_flappy_vf.pdf')}
+          />
+        </MenuItem>
+        <MenuItem>
+          <label htmlFor="flappy_uk.pdf" style={{ cursor: 'pointer' }}>
+            oral_uk.pdf
+          </label>
+          <input
+            id="flappy_uk.pdf"
+            type="file"
+            accept="application/pdf"
+            style={{ display: 'none' }}
+            onChange={(e) => handleFileChange(e, 'flappy_uk.pdf')}
+          />
+        </MenuItem>
+        <MenuItem>
+          <label htmlFor="flappy_vf.pdf" style={{ cursor: 'pointer' }}>
+            oral_vf.pdf
+          </label>
+          <input
+            id="flappy_vf.pdf"
+            type="file"
+            accept="application/pdf"
+            style={{ display: 'none' }}
+            onChange={(e) => handleFileChange(e, 'flappy_vf.pdf')}
+          />
+        </MenuItem>
       </Menu>
       <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={() => setSnackbarOpen(false)}>
         <Alert onClose={() => setSnackbarOpen(false)} severity={snackbarSeverity} sx={{ width: '100%' }}>

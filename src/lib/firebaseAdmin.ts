@@ -94,3 +94,39 @@ export async function getSignedUrlForVfOralPdf(): Promise<string> {
   });
   return url;
 }
+
+// Fonction pour obtenir une URL signée pour pub_flappy_uk.pdf
+export async function getSignedUrlForPubFlappyUk(): Promise<string> {
+  const [url] = await storageAdmin.file('pdfs/pub_flappy_uk.pdf').getSignedUrl({
+    action: 'read',
+    expires: Date.now() + 600000 * 60 * 1000, // L'URL expire dans 600000 minutes soit 10 000 heures soit 416 jours
+  });
+  return url;
+}
+
+// Fonction pour obtenir une URL signée pour pub_flappy_vf.pdf
+export async function getSignedUrlForPubFlappyVF(): Promise<string> {
+  const [url] = await storageAdmin.file('pdfs/pub_flappy_vf.pdf').getSignedUrl({
+    action: 'read',
+    expires: Date.now() + 600000 * 60 * 1000, // L'URL expire dans 600000 minutes soit 10 000 heures soit 416 jours
+  });
+  return url;
+}
+
+// Fonction pour obtenir une URL signée pour flappy_uk.pdf
+export async function getSignedUrlForFlappyUk(): Promise<string> {
+  const [url] = await storageAdmin.file('pdfs/flappy_uk.pdf').getSignedUrl({
+    action: 'read',
+    expires: Date.now() + 600000 * 60 * 1000, // L'URL expire dans 600000 minutes soit 10 000 heures soit 416 jours
+  });
+  return url;
+}
+
+// Fonction pour obtenir une URL signée pour flappy_vf.pdf
+export async function getSignedUrlForFlappyVF(): Promise<string> {
+  const [url] = await storageAdmin.file('pdfs/flappy_vf.pdf').getSignedUrl({
+    action: 'read',
+    expires: Date.now() + 600000 * 60 * 1000, // L'URL expire dans 600000 minutes soit 10 000 heures soit 416 jours
+  });
+  return url;
+}

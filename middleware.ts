@@ -76,6 +76,42 @@ export function middleware(request: NextRequest) {
       return response;
     }
 
+    // Redirection automatique pour pub.flappy.oxelta.io vers /pub-pdf-flappy-uk
+    if (hostname === 'pub.flappy.oxelta.io' && pathname === '/') {
+      const response = NextResponse.redirect(new URL('/pub-pdf-flappy-uk', request.url));
+      response.headers.set('X-SEO-Title', 'Publicity Oxelta');
+      response.headers.set('X-SEO-Description', 'Go to the Oxelta pitch paper to learn more about our vision for the future of gaming with Web 3.0. Play and earn OXLT tokens with our innovative ecosystem of play-and-earn games.');
+      response.headers.set('X-SEO-Keywords', 'flappyoxo, oxelta, solutions, web 3.0, play and earn, OXLT tokens, innovative ecosystem, play-and-earn games');
+      return response;
+    }
+  
+    // Redirection automatique pour pub.flappy.fr.oxelta.io vers /pub-pdf-flappy-vf
+    if (hostname === 'pub.flappy.fr.oxelta.io' && pathname === '/') {
+      const response = NextResponse.redirect(new URL('/pub-pdf-flappy-vf', request.url));
+      response.headers.set('X-SEO-Title', 'Publicité Oxelta - VF');
+      response.headers.set('X-SEO-Description', 'Accédez au pitch paper Oxelta pour en savoir plus sur notre vision pour le futur du jeu vidéo avec Web 3.0. Jouez et gagnez des tokens OXLT avec notre écosystème innovant de jeux play-and-earn.');
+      response.headers.set('X-SEO-Keywords', 'flappyoxo, oxelta, solutions, web 3.0, play and earn, OXLT tokens, innovative ecosystem, play-and-earn games, french');
+      return response;
+    }
+
+    // Redirection automatique pour flappy.oxelta.io vers /pdf-flappy-uk
+    if (hostname === 'flappy.oxelta.io' && pathname === '/') {
+      const response = NextResponse.redirect(new URL('/pdf-flappy-uk', request.url));
+      response.headers.set('X-SEO-Title', 'Publicity Oxelta');
+      response.headers.set('X-SEO-Description', 'Go to the Oxelta pitch paper to learn more about our vision for the future of gaming with Web 3.0. Play and earn OXLT tokens with our innovative ecosystem of play-and-earn games.');
+      response.headers.set('X-SEO-Keywords', 'flappyoxo, oxelta, solutions, web 3.0, play and earn, OXLT tokens, innovative ecosystem, play-and-earn games');
+      return response;
+    }
+  
+    // Redirection automatique pour flappy.fr.oxelta.io vers /pdf-flappy-vf
+    if (hostname === 'flappy.fr.oxelta.io' && pathname === '/') {
+      const response = NextResponse.redirect(new URL('/pdf-flappy-vf', request.url));
+      response.headers.set('X-SEO-Title', 'Publicité Oxelta - VF');
+      response.headers.set('X-SEO-Description', 'Accédez au pitch paper Oxelta pour en savoir plus sur notre vision pour le futur du jeu vidéo avec Web 3.0. Jouez et gagnez des tokens OXLT avec notre écosystème innovant de jeux play-and-earn.');
+      response.headers.set('X-SEO-Keywords', 'flappyoxo, oxelta, solutions, web 3.0, play and earn, OXLT tokens, innovative ecosystem, play-and-earn games, french');
+      return response;
+    }
+
   // Gestion de la session pour les pages protégées de sondage.oxelta.io
   const sessionCookie = request.cookies.get('next-auth.session-token') || request.cookies.get('__Secure-next-auth.session-token');
 
@@ -90,5 +126,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/', '/dashboard/:path*', '/api/uploadPdf', '/pdf-viewer-vf', '/pdf-viewer-uk', '/whitepaper-pdf-viewer-uk', '/whitepaper-pdf-viewer-vf', '/sheet-pdf-viewer-uk', '/sheet-pdf-viewer-vf', '/oral-pdf-viewer-uk', '/oral-pdf-viewer-vf'],
+  matcher: ['/', '/dashboard/:path*', '/api/uploadPdf', '/pdf-viewer-vf', '/pdf-viewer-uk', '/whitepaper-pdf-viewer-uk', '/whitepaper-pdf-viewer-vf', '/sheet-pdf-viewer-uk', '/sheet-pdf-viewer-vf', '/oral-pdf-viewer-uk', '/oral-pdf-viewer-vf', '/pdf-flappy-uk', '/pdf-flappy-vf', '/pub-pdf-flappy-uk', '/pub-pdf-flappy-vf'],
 };
