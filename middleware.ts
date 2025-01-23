@@ -76,12 +76,12 @@ export function middleware(request: NextRequest) {
       return response;
     }
 
-    // Redirection automatique pour whitepaper.fr.oxelta.io vers /whitepaper-pdf-viewer-vf
+    // Redirection automatique pour partner.flappy.oxelta.io vers /pdf-partner-flappy
     if (hostname === 'partner.flappy.oxelta.io' && pathname === '/') {
       const response = NextResponse.redirect(new URL('/pdf-partner-flappy', request.url));
-      response.headers.set('X-SEO-Title', 'Oxelta');
-      response.headers.set('X-SEO-Description', 'Accédez au sheet paper Oxelta pour en savoir plus sur notre vision pour le futur du jeu vidéo avec Web 3.0. Jouez et gagnez des tokens OXLT avec notre écosystème innovant de jeux play-and-earn.');
-      response.headers.set('X-SEO-Keywords', 'sheet paper, oxelta, solutions, web 3.0, play and earn, OXLT tokens, innovative ecosystem, play-and-earn games, french');
+      response.headers.set('X-SEO-Title', 'Partner Paper Oxelta');
+      response.headers.set('X-SEO-Description', 'Go to the Oxelta partner paper to learn more about our vision for the future of gaming with Web 3.0. Play and earn OXLT tokens with our innovative ecosystem of play-and-earn games.');
+      response.headers.set('X-SEO-Keywords', 'partner paper, oxelta, solutions, web 3.0, play and earn, OXLT tokens, innovative ecosystem, play-and-earn games');
       return response;
     }
 
