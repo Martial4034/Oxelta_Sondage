@@ -133,9 +133,18 @@ export async function getSignedUrlForFlappyUk(): Promise<string> {
 
 // Fonction pour obtenir une URL signée pour flappy_partner.pdf
 export async function getSignedUrlForFlappyPartner(): Promise<string> {
-  const [url] = await storageAdmin.file('pdfs/flappy_partner.pdf').getSignedUrl({
-    action: 'read',
-    expires: Date.now() + 600000 * 60 * 1000, // L'URL expire dans 600000 minutes soit 10 000 heures soit 416 jours
-  });
-  return url;
+  try {
+    console.log('Tentative d\'accès au fichier flappy_partner.pdf');
+    const file = storageAdmin.file('pdfs/flappy_partner.pdf');
+    console.log('Fichier trouvé, génération de l\'URL signée');
+    const [url] = await file.getSignedUrl({
+      action: 'read',
+      expires: Date.now() + 600000 * 60 * 1000,
+    });
+    console.log('URL signée générée avec succès');
+    return url;
+  } catch (error) {
+    console.error('Erreur lors de la génération de l\'URL signée:', error);
+    throw error;
+  }
 }

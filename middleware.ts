@@ -137,5 +137,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/', '/dashboard/:path*', '/api/uploadPdf', '/pdf-viewer-vf', '/pdf-viewer-uk', '/whitepaper-pdf-viewer-uk', '/whitepaper-pdf-viewer-vf', '/sheet-pdf-viewer-uk', '/sheet-pdf-viewer-vf', '/oral-pdf-viewer-uk', '/oral-pdf-viewer-vf',  '/pdf-partner-flappy', '/pdf-flappy-uk', '/pub-pdf-flappy-uk', '/pub-pdf-flappy-vf', '/flappy-sheet-pdf-viewer-uk'],
+  matcher: ['/', '/dashboard/:path*', '/api/uploadPdf', '/pdf-viewer-vf', '/pdf-viewer-uk', '/whitepaper-pdf-viewer-uk', '/whitepaper-pdf-viewer-vf', '/sheet-pdf-viewer-uk', '/sheet-pdf-viewer-vf', '/oral-pdf-viewer-uk', '/oral-pdf-viewer-vf', '/pdf-partner-flappy', '/pdf-flappy-uk', '/pub-pdf-flappy-uk', '/pub-pdf-flappy-vf', '/flappy-sheet-pdf-viewer-uk', '/pdf-partner-flappy'],
 };
