@@ -48,6 +48,15 @@ export function middleware(request: NextRequest) {
       response.headers.set('X-SEO-Keywords', 'sheet paper, oxelta, solutions, web 3.0, play and earn, OXLT tokens, innovative ecosystem, play-and-earn games');
       return response;
     }
+
+    // Redirection automatique pour sheet.flappy.oxelta.io vers /whitepaper-pdf-viewer-uk
+    if (hostname === 'sheet.flappy.oxelta.io' && pathname === '/') {
+      const response = NextResponse.redirect(new URL('/flappy-sheet-pdf-viewer-uk', request.url));
+      response.headers.set('X-SEO-Title', 'Sheet Paper Oxelta');
+      response.headers.set('X-SEO-Description', 'Go to the Oxelta sheet paper to learn more about our vision for the future of gaming with Web 3.0. Play and earn OXLT tokens with our innovative ecosystem of play-and-earn games.');
+      response.headers.set('X-SEO-Keywords', 'sheet paper, oxelta, solutions, web 3.0, play and earn, OXLT tokens, innovative ecosystem, play-and-earn games');
+      return response;
+    }
   
     // Redirection automatique pour whitepaper.fr.oxelta.io vers /whitepaper-pdf-viewer-vf
     if (hostname === 'sheet.fr.oxelta.io' && pathname === '/') {
@@ -126,5 +135,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/', '/dashboard/:path*', '/api/uploadPdf', '/pdf-viewer-vf', '/pdf-viewer-uk', '/whitepaper-pdf-viewer-uk', '/whitepaper-pdf-viewer-vf', '/sheet-pdf-viewer-uk', '/sheet-pdf-viewer-vf', '/oral-pdf-viewer-uk', '/oral-pdf-viewer-vf', '/pdf-flappy-uk', '/pdf-partner', '/pub-pdf-flappy-uk', '/pub-pdf-flappy-vf'],
+  matcher: ['/', '/dashboard/:path*', '/api/uploadPdf', '/pdf-viewer-vf', '/pdf-viewer-uk', '/whitepaper-pdf-viewer-uk', '/whitepaper-pdf-viewer-vf', '/sheet-pdf-viewer-uk', '/sheet-pdf-viewer-vf', '/oral-pdf-viewer-uk', '/oral-pdf-viewer-vf', '/pdf-flappy-uk', '/pdf-partner', '/pub-pdf-flappy-uk', '/pub-pdf-flappy-vf', '/flappy-sheet-pdf-viewer-uk'],
 };
