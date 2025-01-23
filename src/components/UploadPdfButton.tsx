@@ -202,7 +202,7 @@ const UploadPdfButton: React.FC = () => {
           partner.pdf
           </label>
           <input
-            id="partner.pdf"
+            id="partnerr.pdf"
             type="file"
             accept="application/pdf"
             style={{ display: 'none' }}
