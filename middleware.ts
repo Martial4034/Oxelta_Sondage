@@ -75,6 +75,16 @@ export function middleware(request: NextRequest) {
       response.headers.set('X-SEO-Keywords', 'Oral paper, oxelta, solutions, web 3.0, play and earn, OXLT tokens, innovative ecosystem, play-and-earn games');
       return response;
     }
+
+    // Redirection automatique pour whitepaper.fr.oxelta.io vers /whitepaper-pdf-viewer-vf
+    if (hostname === 'partner.flappy.oxelta.io' && pathname === '/') {
+      const response = NextResponse.redirect(new URL('/pdf-partner-flappy', request.url));
+      response.headers.set('X-SEO-Title', 'Oxelta');
+      response.headers.set('X-SEO-Description', 'Accédez au sheet paper Oxelta pour en savoir plus sur notre vision pour le futur du jeu vidéo avec Web 3.0. Jouez et gagnez des tokens OXLT avec notre écosystème innovant de jeux play-and-earn.');
+      response.headers.set('X-SEO-Keywords', 'sheet paper, oxelta, solutions, web 3.0, play and earn, OXLT tokens, innovative ecosystem, play-and-earn games, french');
+      return response;
+    }
+
   
     // Redirection automatique pour whitepaper.fr.oxelta.io vers /oral-pdf-viewer-vf
     if (hostname === 'oral.fr.oxelta.io' && pathname === '/') {
@@ -112,14 +122,6 @@ export function middleware(request: NextRequest) {
       return response;
     }
   
-    // Redirection automatique pour partner.oxelta.io vers /pdf-partner-flappy
-    if (hostname === 'partner.flappy.oxelta.io' && pathname === '/') {
-      const response = NextResponse.redirect(new URL('/pdf-partner-flappy', request.url));
-      response.headers.set('X-SEO-Title', 'Oxelta Partner');
-      response.headers.set('X-SEO-Description', 'Accédez au ton nest paper Oxelta pour en savoir plus sur notre vision pour le futur du jeu vidéo avec Web 3.0. Jouez et gagnez des tokens OXLT avec notre écosystème innovant de jeux play-and-earn.');
-      response.headers.set('X-SEO-Keywords', 'flappyoxo, oxelta, solutions, web 3.0, play and earn, OXLT tokens, innovative ecosystem, play-and-earn games, french');
-      return response;
-    }
 
   // Gestion de la session pour les pages protégées de sondage.oxelta.io
   const sessionCookie = request.cookies.get('next-auth.session-token') || request.cookies.get('__Secure-next-auth.session-token');
@@ -135,5 +137,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/', '/dashboard/:path*', '/api/uploadPdf', '/pdf-viewer-vf', '/pdf-viewer-uk', '/whitepaper-pdf-viewer-uk', '/whitepaper-pdf-viewer-vf', '/sheet-pdf-viewer-uk', '/sheet-pdf-viewer-vf', '/oral-pdf-viewer-uk', '/oral-pdf-viewer-vf', '/pdf-flappy-uk', '/pub-pdf-flappy-uk', '/pub-pdf-flappy-vf', '/flappy-sheet-pdf-viewer-uk', '/pdf-partner-flappy'],
+  matcher: ['/', '/dashboard/:path*', '/api/uploadPdf', '/pdf-viewer-vf', '/pdf-viewer-uk', '/whitepaper-pdf-viewer-uk', '/whitepaper-pdf-viewer-vf', '/sheet-pdf-viewer-uk', '/sheet-pdf-viewer-vf', '/oral-pdf-viewer-uk', '/oral-pdf-viewer-vf',  '/pdf-partner-flappy', '/pdf-flappy-uk', '/pub-pdf-flappy-uk', '/pub-pdf-flappy-vf', '/flappy-sheet-pdf-viewer-uk'],
 };
