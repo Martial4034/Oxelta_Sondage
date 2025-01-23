@@ -198,7 +198,7 @@ const UploadPdfButton: React.FC = () => {
           />
         </MenuItem>
         <MenuItem>
-          <label htmlFor="partner.pdf" style={{ cursor: 'pointer' }}>
+          <label htmlFor="partnerr.pdf" style={{ cursor: 'pointer' }}>
           partner.pdf
           </label>
           <input
@@ -206,7 +206,7 @@ const UploadPdfButton: React.FC = () => {
             type="file"
             accept="application/pdf"
             style={{ display: 'none' }}
-            onChange={(e) => handleFileChange(e, 'partner.pdf')}
+            onChange={(e) => handleFileChange(e, 'partnerr.pdf')}
           />
         </MenuItem>
         <MenuItem>

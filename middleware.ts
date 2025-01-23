@@ -40,7 +40,7 @@ export function middleware(request: NextRequest) {
     return response;
   }
 
-    // Redirection automatique pour sheet.oxelta.io vers /whitepaper-pdf-viewer-uk
+    // Redirection automatique pour sheet.oxelta.io vers /sheet-pdf-viewer-uk
     if (hostname === 'sheet.oxelta.io' && pathname === '/') {
       const response = NextResponse.redirect(new URL('/sheet-pdf-viewer-uk', request.url));
       response.headers.set('X-SEO-Title', 'Sheet Paper Oxelta');
@@ -49,7 +49,7 @@ export function middleware(request: NextRequest) {
       return response;
     }
 
-    // Redirection automatique pour sheet.flappy.oxelta.io vers /whitepaper-pdf-viewer-uk
+    // Redirection automatique pour sheet.flappy.oxelta.io vers /flappy-sheet-pdf-viewer-uk
     if (hostname === 'sheet.flappy.oxelta.io' && pathname === '/') {
       const response = NextResponse.redirect(new URL('/flappy-sheet-pdf-viewer-uk', request.url));
       response.headers.set('X-SEO-Title', 'Sheet Paper Oxelta');

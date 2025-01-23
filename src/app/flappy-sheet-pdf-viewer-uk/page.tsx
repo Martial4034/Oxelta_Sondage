@@ -1,8 +1,8 @@
-import { getSignedUrlForUkSheetPdf } from '@/lib/firebaseAdmin';
+import { getSignedUrlForFlappyUkSheetPdf } from '@/lib/firebaseAdmin';
 import PDFLoader from '@/components/PDFLoader';
 
 export default async function PDFViewerUKPage() {
-  const signedUrl = await getSignedUrlForUkSheetPdf();
+  const signedUrl = await getSignedUrlForFlappyUkSheetPdf();
 
   return <PDFLoader signedUrl={signedUrl} />;
 }
