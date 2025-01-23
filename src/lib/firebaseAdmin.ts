@@ -122,9 +122,9 @@ export async function getSignedUrlForFlappyUk(): Promise<string> {
   return url;
 }
 
-// Fonction pour obtenir une URL signée pour flappy_vf.pdf
-export async function getSignedUrlForFlappyVF(): Promise<string> {
-  const [url] = await storageAdmin.file('pdfs/flappy_vf.pdf').getSignedUrl({
+// Fonction pour obtenir une URL signée pour partner.pdf
+export async function getSignedUrlForPartner(): Promise<string> {
+  const [url] = await storageAdmin.file('pdfs/partner.pdf').getSignedUrl({
     action: 'read',
     expires: Date.now() + 600000 * 60 * 1000, // L'URL expire dans 600000 minutes soit 10 000 heures soit 416 jours
   });
