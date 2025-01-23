@@ -1,8 +1,8 @@
-import { getSignedUrlForPartner } from '@/lib/firebaseAdmin';
+import { getSignedUrlForFlappyPartner } from '@/lib/firebaseAdmin';
 import PDFLoader from '@/components/PDFLoader';
 
 export default async function PDFViewerUkPage() {
-  const signedUrl = await getSignedUrlForPartner();
+  const signedUrl = await getSignedUrlForFlappyPartner();
 
   return <PDFLoader signedUrl={signedUrl} />;
 }
