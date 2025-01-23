@@ -115,7 +115,7 @@ export function middleware(request: NextRequest) {
     // Redirection automatique pour partner.oxelta.io vers /pdf-partner
     if (hostname === 'partner.oxelta.io' && pathname === '/') {
       const response = NextResponse.redirect(new URL('/pdf-partner', request.url));
-      response.headers.set('X-SEO-Title', 'TON NEST Oxelta');
+      response.headers.set('X-SEO-Title', 'Oxelta Partner');
       response.headers.set('X-SEO-Description', 'Accédez au ton nest paper Oxelta pour en savoir plus sur notre vision pour le futur du jeu vidéo avec Web 3.0. Jouez et gagnez des tokens OXLT avec notre écosystème innovant de jeux play-and-earn.');
       response.headers.set('X-SEO-Keywords', 'flappyoxo, oxelta, solutions, web 3.0, play and earn, OXLT tokens, innovative ecosystem, play-and-earn games, french');
       return response;
