@@ -214,7 +214,7 @@ const UploadPdfButton: React.FC = () => {
           flappy_sheet_uk.pdf
           </label>
           <input
-            id="partner.pdf"
+            id="flappy_sheet_uk.pdf"
             type="file"
             accept="application/pdf"
             style={{ display: 'none' }}
